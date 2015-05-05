@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource
 {
-    var current_color = UIColor.blackColor();
+    var current_color = CustomColor(in_red: 0, in_green: 0, in_blue: 0);
     var background = UIView();
     var super_view = UIView();
     var red_slider = UISlider();
@@ -21,7 +21,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var indicator_text = ["R","G","B"];
     var RGB = [UIColor.redColor(), UIColor.greenColor(), UIColor.blueColor()];
     var table_view = UITableView();
-    var saved_colors = Array<UIColor>();
+    var saved_colors = Array<CustomColor>();
     
     func moved_slider(sender:UISlider!)
     {
@@ -29,13 +29,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         var red_val:CGFloat = CGFloat(red_slider.value) / max_val;
         var green_val:CGFloat = CGFloat(green_slider.value) / max_val;
         var blue_val:CGFloat = CGFloat(blue_slider.value) / max_val;
-        current_color = UIColor(red: red_val, green: green_val, blue: blue_val, alpha: 1.0);
-        color_view.backgroundColor = current_color;
+        current_color.set(red_val, in_green: green_val, in_blue: blue_val);
+        color_view.backgroundColor = current_color.get_UIColor();
     }
     func save_color(sender:UIButton!)
     {
-        saved_colors.append(current_color);
-        table_view.reloadData();
+        var red = current_color.rgb_discrete[0];
+        var green = current_color.rgb_discrete[1];
+        var blue = current_color.rgb_discrete[2];
+            saved_colors.append(CustomColor(in_red: red, in_green: green, in_blue: blue));
+            table_view.reloadData();
+        //}
     }
     
     override func viewDidLoad() {
@@ -43,16 +47,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super_view = self.view;
         add_subview(background, super_view, 1.0, 1.0, 1.0);
         background.backgroundColor = UIColor.whiteColor();
-        
+        //configure_gradient(&super_view, &background, UIColor.whiteColor(), UIColor.lightGrayColor());
         var super_height:CGFloat = super_view.bounds.width;
         var super_width:CGFloat = super_view.bounds.height;
         var margin:CGFloat = 25.0;
-        
+        //
         //-------------------------------------------------------------------------------------------
         // CONFIGURE COLOR VIEW IN RHS OF DEVICE
         //-------------------------------------------------------------------------------------------
         color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
-        color_view.backgroundColor = current_color;
+        color_view.backgroundColor = current_color.get_UIColor();
         color_view.layer.borderColor = UIColor.blackColor().CGColor;
         color_view.layer.borderWidth = 1.0;
         super_view.addSubview(color_view);
@@ -124,7 +128,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
         table_view.setTranslatesAutoresizingMaskIntoConstraints(false);
         background.addSubview(table_view);
-        table_view.backgroundColor = UIColor.grayColor();
+        table_view.backgroundColor = UIColor.whiteColor();
+        table_view.layer.borderWidth = 1.0;
         var table_top = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[indicators.count-1], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:margin);
         var table_bottom = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin);
         var width_table = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant:0.0);
@@ -144,12 +149,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         var cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! UITableViewCell;
-        cell.backgroundColor = self.saved_colors[indexPath.row];    // set cell color to saved color
-        //var view = UIView();
-        //view.backgroundColor = self.saved_colors[indexPath.row];
-        //add_subview(view, cell, 1.0, 1.0, 1.0);
+        cell.backgroundColor = self.saved_colors[(saved_colors.count-1) - indexPath.row].get_UIColor();    // set cell color to saved color
         return cell;
-        
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
