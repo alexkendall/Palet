@@ -8,8 +8,9 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource
+class ViewController: UIViewController
 {
+    let NUM_SHADES = 9;
     var current_color = CustomColor(in_red: 0, in_green: 0, in_blue: 0);
     var background = UIView();
     var super_view = UIView();
@@ -20,14 +21,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var indicators = Array<UILabel>();
     var indicator_text = ["R","G","B"];
     var RGB = [UIColor.redColor(), UIColor.greenColor(), UIColor.blueColor()];
-    var table_view = UITableView();
     var saved_colors = Array<CustomColor>();
     var shade_view = UIView();
-    
-    func update_gradient()
-    {
-        generate_shades(15, &shade_view, current_color);
-    }
+    var hex_text = UILabel();
+    var rgb_text = UILabel();
     
     func moved_slider()
     {
@@ -37,6 +34,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         var blue_val:CGFloat = CGFloat(blue_slider.value) / max_val;
         current_color.set(red_val, in_green: green_val, in_blue: blue_val);
         color_view.backgroundColor = current_color.get_UIColor();
+        hex_text.text = current_color.hex_string;
+        var rgb_str = String(format: "rgb(%i, %i, %i)", current_color.red(), current_color.green(), current_color.blue());
+        rgb_text.text = rgb_str;
+        generate_shades(9, &shade_view, current_color);
     }
     func save_color(sender:UIButton!)
     {
@@ -46,7 +47,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             var green = current_color.rgb_discrete[1];
             var blue = current_color.rgb_discrete[2];
             saved_colors.append(CustomColor(in_red: red, in_green: green, in_blue: blue));
-            table_view.reloadData();
+            //table_view.reloadData();
         }
     }
     
@@ -55,12 +56,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super_view = self.view;
         add_subview(background, super_view, 1.0, 1.0, 1.0);
         background.backgroundColor = UIColor.whiteColor();
-        configure_gradient(&super_view, &background, UIColor.lightGrayColor(), UIColor.grayColor());
+        //configure_gradient(&super_view, &background, UIColor.lightGrayColor(), UIColor.whiteColor());
         var super_height:CGFloat = super_view.bounds.width;
         var super_width:CGFloat = super_view.bounds.height;
         var margin:CGFloat = 25.0;
-
-        //
         //-------------------------------------------------------------------------------------------
         // CONFIGURE COLOR VIEW IN RHS OF DEVICE
         //-------------------------------------------------------------------------------------------
@@ -81,6 +80,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // add target to enable saving the color
         color_view.addTarget(self, action: "save_color:", forControlEvents: UIControlEvents.TouchUpInside);
         //-------------------------------------------------------------------------------------------
+        // CONFIGURE HEXIDECIMAL TEXT VIEW UNDER COLOR VIEW
+        //-------------------------------------------------------------------------------------------
+        hex_text.setTranslatesAutoresizingMaskIntoConstraints(false);
+        background.addSubview(hex_text);
+        var center_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 0.0);
+        var top_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: margin/2.0);
+        var height_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin);
+        var width_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 4*margin);
+        super_view.addConstraint(center_hex);
+        super_view.addConstraint(top_hex);
+        super_view.addConstraint(height_hex);
+        super_view.addConstraint(width_hex);
+        hex_text.text = "#000000";
+        hex_text.textColor = UIColor.blackColor();
+        hex_text.textAlignment = NSTextAlignment.Left;
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE RGB TEXT VIEW BY HEX_TEXT
+        //-------------------------------------------------------------------------------------------
+        rgb_text.setTranslatesAutoresizingMaskIntoConstraints(false);
+        rgb_text.text = "rgb(0,0,0)";
+        background.addSubview(rgb_text);
+        var centery_rgb = NSLayoutConstraint(item: rgb_text, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
+
+        var right_rgb = NSLayoutConstraint(item: rgb_text, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);
+        
+        super_view.addConstraint(centery_rgb);
+        super_view.addConstraint(right_rgb);
+        
+        
+        //-------------------------------------------------------------------------------------------
         // CONFIGURE LABELS IN RHS OF DEVICE
         //-------------------------------------------------------------------------------------------
         for(var i = 0; i < 3; ++i)
@@ -96,10 +125,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             indicators[i].layer.backgroundColor = UIColor.whiteColor().CGColor;
             indicators[i].layer.borderWidth = 1.0;
             background.addSubview(indicators[i]);
-            var baseline = margin + (1.5 * margin * CGFloat(i));
+            var baseline = (margin / 2.0) + (1.5 * margin * CGFloat(i));
             var left = NSLayoutConstraint(item: indicators[i], attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 0.0);
             var right = NSLayoutConstraint(item: indicators[i], attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: margin);
-            var top = NSLayoutConstraint(item: indicators[i], attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:baseline);
+            var top = NSLayoutConstraint(item: indicators[i], attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:baseline);
             
             var height = NSLayoutConstraint(item: indicators[i], attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:-margin);
             super_view.addConstraint(left);
@@ -117,42 +146,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             sliders[i].setTranslatesAutoresizingMaskIntoConstraints(false);
             background.addSubview(sliders[i]);
             sliders[i].minimumValue = 0.0;
-            sliders[i].maximumValue = 255.0;    // RGB 0-256
+            sliders[i].maximumValue = 255.0;    // RGB 0-255
             sliders[i].minimumTrackTintColor = RGB[i];
             sliders[i].maximumTrackTintColor = UIColor.blackColor();
+            // set current val to 128
+            sliders[i].value = 0;
+            
             // add extra margin space on left side to put rgb labels to left of sliders
-            var left = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: margin);
+            var left = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: margin / 2.0);
             var right = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -margin);
             var center_y = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant:0.0);
             super_view.addConstraint(left);
             super_view.addConstraint(right);
             super_view.addConstraint(center_y);
-            // add target when slider is adjusted and tag each -> r = 0, b = 1, g = 2
             sliders[i].addTarget(self, action: "moved_slider", forControlEvents: UIControlEvents.ValueChanged);
-            sliders[i].addTarget(self, action: "update_gradient", forControlEvents: UIControlEvents.TouchUpInside);
         }
-        //-------------------------------------------------------------------------------------------
-        // CONFIGURE TABLE VIEW FOR SAVED COLORS
-        //-------------------------------------------------------------------------------------------
-        
-        table_view.dataSource = self;
-        table_view.delegate = self;
-        table_view.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
-        table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
-        table_view.setTranslatesAutoresizingMaskIntoConstraints(false);
-        background.addSubview(table_view);
-        table_view.backgroundColor = UIColor.whiteColor();
-        table_view.layer.borderWidth = 1.0;
-        var table_top = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[indicators.count-1], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:margin);
-        var table_bottom = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin);
-        var table_right = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant:-margin / 2.0);
-        var table_left = NSLayoutConstraint(item: table_view, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant:margin);
-        super_view.addConstraint(table_top);
-        super_view.addConstraint(table_bottom);
-        super_view.addConstraint(table_right);
-        super_view.addConstraint(table_left);
-        // Do any additional setup after loading the view, typically from a nib.
-        
+        moved_slider();
         
         //-------------------------------------------------------------------------------------------
         // CONFIGURE SHADE VIEW OF BUTTONS
@@ -161,42 +170,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         shade_view.layer.borderWidth = 1.0;
         shade_view.setTranslatesAutoresizingMaskIntoConstraints(false);
         background.addSubview(shade_view);
-        var shade_height = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: table_view, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant:0.0);
-        var shade_width = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: table_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant:0.0);
-        var shade_centery = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: table_view, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant:0.0);
-        var shade_left = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant:margin/2.0);
-        super_view.addConstraint(shade_height);
-        super_view.addConstraint(shade_width);
-        super_view.addConstraint(shade_centery);
-        super_view.addConstraint(shade_left);
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // gets count to determine number of cells to create
-        return self.saved_colors.count;
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        var cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! UITableViewCell;
-        // set cell color to saved color
-        cell.backgroundColor = self.saved_colors[(saved_colors.count-1) - indexPath.row].get_UIColor();
-        cell.layer.borderWidth = 0.5;
-        return cell;
-    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
-    {
-        //println(String(format:"Selected color at row %i \n", indexPath.row));
-        //saved_colors[(saved_colors.count-1) - indexPath.row].print();
-        // data ordered in reverse order of stack
-        var cell = tableView.cellForRowAtIndexPath(indexPath);
-        // set current color to color from selected cell
-        current_color = saved_colors[(saved_colors.count-1) - indexPath.row];
-        red_slider.value = Float(current_color.rgb_discrete[0]);
-        green_slider.value = Float(current_color.rgb_discrete[1]);
-        blue_slider.value = Float(current_color.rgb_discrete[2]);
-        moved_slider();
+        var shade_centerx = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant:0.0);
+        var shade_width = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant:0.0);
+        var shade_top = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[2], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:margin);
+        var shade_bottom = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:-margin);
+        
+        super_view.addConstraint(shade_centerx);
+        super_view.addConstraint(shade_width);
+        super_view.addConstraint(shade_top);
+        super_view.addConstraint(shade_bottom);
     }
     
     //-------------------------------------------------------------------------

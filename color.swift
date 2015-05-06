@@ -154,7 +154,7 @@ func generate_shades(var num_shades:Int, inout superview:UIView, var color:Custo
         var dist_from_top = superview.bounds.height / CGFloat(num_shades) * CGFloat(i);
         
         var shade = UIButton();
-        shade.layer.borderWidth = 0.5;
+        //shade.layer.borderWidth = 0.5;
         shade.setTranslatesAutoresizingMaskIntoConstraints(false);
         superview.addSubview(shade);
         

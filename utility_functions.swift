@@ -45,7 +45,6 @@ func add_subview(subview:UIView, superview:UIView, width_ratio:CGFloat, height_r
 func configure_gradient(inout super_view:UIView, inout background:UIView, top_color:UIColor, bottom_color:UIColor)
 {
     background.setTranslatesAutoresizingMaskIntoConstraints(false);
-    
     // generate constraints for background
     var width = NSLayoutConstraint(item: background, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: super_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0.0);
     
