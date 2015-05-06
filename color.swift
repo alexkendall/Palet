@@ -30,6 +30,21 @@ class CustomColor:Equatable
         return UIColor(red: rgb_continuous[0], green: rgb_continuous[1],
             blue: rgb_continuous[2], alpha: 1.0);
     }
+     //-------------------------------------------------------------------------
+    func red()->Int
+    {
+        return rgb_discrete[0];
+    }
+     //-------------------------------------------------------------------------
+    func green()->Int
+    {
+        return rgb_discrete[1];
+    }
+     //-------------------------------------------------------------------------
+    func blue()->Int
+    {
+        return rgb_discrete[2]
+    }
     //-------------------------------------------------------------------------
     func set(var in_red:Int, var in_green:Int, var in_blue:Int)
     {
@@ -73,14 +88,13 @@ class CustomColor:Equatable
     
     func print()
     {
-       var discrete_str = String(format: "RGB Discrete: Red % i, Green %i, Blue %i\n",rgb_discrete[0], rgb_discrete[1], rgb_discrete[2]);
+       var discrete_str = String(format: "RGB Discrete: R:% i, G:%i, B:%i\n",rgb_discrete[0], rgb_discrete[1], rgb_discrete[2]);
        
-        var contin_str = String(format: "RGB Continuous: Red % f, Green %f, Blue %f\n",rgb_continuous[0], rgb_continuous[1], rgb_continuous[2]);
+        var contin_str = String(format: "RGB Continuous: R:%.2f, G:%.2f, B:%.2f\n",rgb_continuous[0], rgb_continuous[1], rgb_continuous[2]);
         
         println(discrete_str);
         println(contin_str);
     }
-    
     //-------------------------------------------------------------------------
     // data
     var rgb_continuous:Array<CGFloat> = [0.0, 0.0, 0.0];
@@ -89,18 +103,91 @@ class CustomColor:Equatable
     //-------------------------------------------------------------------------
 }
 
+//-------------------------------------------------------------------------
+// operator overloading
+//-------------------------------------------------------------------------
+
 func ==(lhs:CustomColor , rhs:CustomColor) -> Bool
 {
-    lhs.print();
-    rhs.print();
-    println("comparing values");
     if(lhs.rgb_discrete[0] == rhs.rgb_discrete[0]) &&
         (lhs.rgb_discrete[1] == rhs.rgb_discrete[1]) &&
         (lhs.rgb_discrete[2] == rhs.rgb_discrete[2])
     {
-        println("equal");
         return true;
     }
-    println("not equal");
     return false;
 }
+
+//-------------------------------------------------------------------------
+
+func +(lhs:CustomColor , rhs:CustomColor) -> CustomColor
+{
+    var red = lhs.red() + rhs.red();
+    var green = lhs.green() + rhs.green();
+    var blue = lhs.blue() + rhs.blue();
+    return CustomColor(in_red: red, in_green: green, in_blue: blue);
+}
+
+//-------------------------------------------------------------------------
+
+func *(lhs:CustomColor , rhs:Float) -> CustomColor
+{
+    var red = Int(Float(lhs.red()) * rhs);
+    var green = Int(Float(lhs.green()) * rhs);
+    var blue = Int(Float(lhs.blue()) * rhs);
+    return CustomColor(in_red: red, in_green: green, in_blue: blue);
+}
+
+//-------------------------------------------------------------------------
+func generate_shades(var num_shades:Int, inout superview:UIView, var color:CustomColor)
+{
+    var shades = Array<UIButton>();
+    var black = CustomColor(in_red: 0.0, in_green: 0.0, in_blue: 0.0);
+    var white = CustomColor(in_red: 1.0, in_green: 1.0, in_blue: 1.0);
+    if(num_shades % 2 == 0) // should be off number such that base color is in middle
+    {
+        ++num_shades;
+    }
+    for(var i = 0; i < num_shades; ++i)
+    {
+        // configure shade button in heiarchy
+        var dist_from_top = superview.bounds.height / CGFloat(num_shades) * CGFloat(i);
+        
+        var shade = UIButton();
+        shade.layer.borderWidth = 0.5;
+        shade.setTranslatesAutoresizingMaskIntoConstraints(false);
+        superview.addSubview(shade);
+        
+        var width = NSLayoutConstraint(item: shade, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0.0);
+        var height = NSLayoutConstraint(item: shade, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Height, multiplier: 1.0 / CGFloat(num_shades), constant:0.0);
+        
+        var center_x =  NSLayoutConstraint(item: shade, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant: 0.0);
+        
+        var top =  NSLayoutConstraint(item: shade, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: dist_from_top);
+        
+        superview.addConstraint(width);
+        superview.addConstraint(height);
+        superview.addConstraint(center_x);
+        superview.addConstraint(top);
+        shades.append(shade);
+    }
+
+    // first half shades are linear combo of white and color
+    var half_index = shades.count / 2;
+    for(var i = 0; i < half_index; ++i)
+    {
+        var t:Float = Float(i) / Float(half_index);
+        var shade_color = (white * (1.0 - t)) + (color * t);
+        shades[i].backgroundColor = shade_color.get_UIColor();
+    }
+    shades[half_index].backgroundColor = color.get_UIColor();
+    for(var i = half_index+1; i < shades.count; ++i)
+    {
+        var t:Float = (Float(i) - Float(half_index)) / Float(half_index);
+        var shade_color = (color * (1.0-t)) + (black * t);
+        shades[i].backgroundColor = shade_color.get_UIColor();
+    }
+}
+
+
+
