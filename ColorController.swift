@@ -1,13 +1,7 @@
-//
-//  ViewController.swift
-//  Color Creator
-//
-//  Created by Alex Harrison on 5/5/15.
-//  Copyright (c) 2015 Alex Harrison. All rights reserved.
-//
+
 import UIKit
 
-class ViewController: UIViewController
+class ColorController: UIViewController
 {
     let NUM_SHADES = 9;
     var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
@@ -27,18 +21,10 @@ class ViewController: UIViewController
     var shades = Array<UIButton>();
     var data_controller = DataController();
     
-    func clear_subviews()
+    func remove_color_picker()
     {
-        while(background.subviews.count > 0)
-        {
-            background.subviews.first!.removeFromSuperview();
-        }
-
-        while(super_view.subviews.count > 0)
-        {
-            super_view.subviews.first!.removeFromSuperview();
-        }
-        viewDidLoad();
+        //self.presentViewController(data_controller, animated: true, completion: nil);
+        self.view.removeFromSuperview();
     }
     
     func selected_shade(sender:UIButton!)
@@ -141,7 +127,7 @@ class ViewController: UIViewController
         var center_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 0.0);
         var top_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: margin/2.0);
         var height_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin);
-        var width_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 4*margin);
+        var width_hex = NSLayoutConstraint(item: hex_text, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 8*margin);
         super_view.addConstraint(center_hex);
         super_view.addConstraint(top_hex);
         super_view.addConstraint(height_hex);
@@ -156,7 +142,7 @@ class ViewController: UIViewController
         rgb_text.text = "rgb(0,0,0)";
         background.addSubview(rgb_text);
         var centery_rgb = NSLayoutConstraint(item: rgb_text, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: hex_text, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
-
+        
         var right_rgb = NSLayoutConstraint(item: rgb_text, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);
         
         super_view.addConstraint(centery_rgb);
@@ -229,8 +215,7 @@ class ViewController: UIViewController
         moved_slider();
         
         // test for vewcontroller
-        save_button.addTarget(self, action: "clear_subviews", forControlEvents: UIControlEvents.TouchUpInside);
-        
+        save_button.addTarget(self, action: "remove_color_picker", forControlEvents: UIControlEvents.TouchUpInside);
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {

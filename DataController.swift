@@ -15,6 +15,8 @@ class DataController: UIViewController, UITableViewDelegate, UITableViewDataSour
 {
     var table_view = UITableView();
     var saved_colors = Array<CustomColor>();
+    var background = UIView();
+    var superview = UIView();
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -23,6 +25,10 @@ class DataController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        superview = self.view;
+        superview.backgroundColor = UIColor.whiteColor();
+        //presentViewController(self.parentViewController!, animated: true, completion: nil);
     }
 
     
