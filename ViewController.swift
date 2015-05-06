@@ -25,6 +25,7 @@ class ViewController: UIViewController
     var shade_view = UIView();
     var hex_text = UILabel();
     var rgb_text = UILabel();
+    var save_button = UIButton();
     
     func moved_slider()
     {
@@ -37,7 +38,7 @@ class ViewController: UIViewController
         hex_text.text = current_color.hex_string;
         var rgb_str = String(format: "rgb(%i, %i, %i)", current_color.red(), current_color.green(), current_color.blue());
         rgb_text.text = rgb_str;
-        generate_shades(9, &shade_view, current_color);
+        generate_shades(NUM_SHADES, &shade_view, current_color);
     }
     func save_color(sender:UIButton!)
     {
@@ -61,7 +62,7 @@ class ViewController: UIViewController
         var super_width:CGFloat = super_view.bounds.height;
         var margin:CGFloat = 25.0;
         //-------------------------------------------------------------------------------------------
-        // CONFIGURE COLOR VIEW IN RHS OF DEVICE
+        // CONFIGURE COLOR VIEW IN TOP OF DEVICE
         //-------------------------------------------------------------------------------------------
         color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
         color_view.backgroundColor = current_color.get_UIColor();
@@ -79,6 +80,24 @@ class ViewController: UIViewController
         super_view.addConstraint(height);
         // add target to enable saving the color
         color_view.addTarget(self, action: "save_color:", forControlEvents: UIControlEvents.TouchUpInside);
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE SAVE BUTTON IN COLOR VIEW
+        //-------------------------------------------------------------------------------------------
+        save_button.setTranslatesAutoresizingMaskIntoConstraints(false);
+        save_button.backgroundColor = UIColor.lightGrayColor();
+        save_button.setBackgroundImage(UIImage(named: "save"), forState: UIControlState.Normal);
+        save_button.layer.borderWidth = 0.5;
+        color_view.addSubview(save_button);
+        var save_right = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);
+        var save_bottom = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0.0);
+        var save_height = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: save_button, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin * 1.25);
+        var save_width = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: save_button, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: margin * 1.25);
+        // add constraints
+        color_view.addConstraint(save_right);
+        color_view.addConstraint(save_bottom);
+        color_view.addConstraint(save_height);
+        color_view.addConstraint(save_width);
+        
         //-------------------------------------------------------------------------------------------
         // CONFIGURE HEXIDECIMAL TEXT VIEW UNDER COLOR VIEW
         //-------------------------------------------------------------------------------------------
@@ -184,7 +203,6 @@ class ViewController: UIViewController
     
     //-------------------------------------------------------------------------
 
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
