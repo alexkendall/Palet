@@ -50,6 +50,8 @@ class ViewController: UIViewController
         var red_val:CGFloat = CGFloat(red_slider.value) / max_val;
         var green_val:CGFloat = CGFloat(green_slider.value) / max_val;
         var blue_val:CGFloat = CGFloat(blue_slider.value) / max_val;
+
+        
         current_color.set(red_val, in_green: green_val, in_blue: blue_val);
         color_view.backgroundColor = current_color.get_UIColor();
         hex_text.text = current_color.hex_string;
@@ -195,7 +197,7 @@ class ViewController: UIViewController
             sliders[i].maximumValue = 255.0;    // RGB 0-255
             sliders[i].minimumTrackTintColor = RGB[i];
             sliders[i].maximumTrackTintColor = UIColor.blackColor();
-            // set current val to 128
+            // set current val to 0
             sliders[i].value = 0;
             
             // add extra margin space on left side to put rgb labels to left of sliders
@@ -220,13 +222,11 @@ class ViewController: UIViewController
         var shade_width = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant:0.0);
         var shade_top = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[2], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:margin);
         var shade_bottom = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:-margin);
-        
         super_view.addConstraint(shade_centerx);
         super_view.addConstraint(shade_width);
         super_view.addConstraint(shade_top);
         super_view.addConstraint(shade_bottom);
-        
-        moved_slider();
+        generate_shades(&shades, NUM_SHADES, &shade_view, current_color);
     }
     
     //-------------------------------------------------------------------------

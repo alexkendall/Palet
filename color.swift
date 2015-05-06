@@ -151,10 +151,10 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
     for(var i = 0; i < num_shades; ++i)
     {
         // configure shade button in heiarchy
-        var dist_from_top = superview.bounds.height / CGFloat(num_shades) * CGFloat(i);
-        
+        superview.setNeedsLayout();
+        superview.layoutIfNeeded();
+        var dist_from_top = superview.bounds.size.height / CGFloat(num_shades) * CGFloat(i);
         var shade = UIButton();
-        //shade.layer.borderWidth = 0.5;
         shade.setTranslatesAutoresizingMaskIntoConstraints(false);
         superview.addSubview(shade);
         
@@ -173,6 +173,7 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
     }
 
     // first half shades are linear combo of white and color
+
     var half_index = shades.count / 2;
     for(var i = 0; i < half_index; ++i)
     {
@@ -187,6 +188,7 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
         var shade_color = (color * (1.0-t)) + (black * t);
         shades[i].backgroundColor = shade_color.get_UIColor();
     }
+    
 }
 
 
