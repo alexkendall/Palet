@@ -26,6 +26,23 @@ class ViewController: UIViewController
     var hex_text = UILabel();
     var rgb_text = UILabel();
     var save_button = UIButton();
+    var shades = Array<UIButton>();
+    
+    func selected_shade(sender:UIButton!)
+    {
+        var shade_color = shades[sender.tag].backgroundColor;
+        var red:CGFloat = 0.0, blue:CGFloat = 0.0, green:CGFloat = 0.0, alpha:CGFloat = 0.0;
+        shade_color?.getRed(&red, green: &green, blue: &blue, alpha: &alpha);
+        red *= 255.0;
+        green *= 255.0;
+        blue *= 255.0;
+        current_color.set(Int(red), in_green: Int(green), in_blue: Int(blue));
+        // update slider values
+        red_slider.value = Float(red);
+        green_slider.value = Float(green);
+        blue_slider.value = Float(blue);
+        moved_slider();
+    }
     
     func moved_slider()
     {
@@ -38,7 +55,17 @@ class ViewController: UIViewController
         hex_text.text = current_color.hex_string;
         var rgb_str = String(format: "rgb(%i, %i, %i)", current_color.red(), current_color.green(), current_color.blue());
         rgb_text.text = rgb_str;
-        generate_shades(NUM_SHADES, &shade_view, current_color);
+        generate_shades(&shades, NUM_SHADES, &shade_view, current_color);
+        for(var i = 0; i < shades.count; ++i)
+        {
+            if(shades.count != NUM_SHADES)
+            {
+                println("ERROR INCORRECT NUMBER OF SHADES");
+                exit(-1);
+            }
+            shades[i].addTarget(self, action: "selected_shade:", forControlEvents: UIControlEvents.TouchUpInside);
+            shades[i].tag = i; // tag shade so we know which color to update to when shade is selected
+        }
     }
     func save_color(sender:UIButton!)
     {
@@ -180,7 +207,6 @@ class ViewController: UIViewController
             super_view.addConstraint(center_y);
             sliders[i].addTarget(self, action: "moved_slider", forControlEvents: UIControlEvents.ValueChanged);
         }
-        moved_slider();
         
         //-------------------------------------------------------------------------------------------
         // CONFIGURE SHADE VIEW OF BUTTONS
@@ -199,14 +225,16 @@ class ViewController: UIViewController
         super_view.addConstraint(shade_width);
         super_view.addConstraint(shade_top);
         super_view.addConstraint(shade_bottom);
+        
+        moved_slider();
     }
     
     //-------------------------------------------------------------------------
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    //-------------------------------------------------------------------------
     
 }
 

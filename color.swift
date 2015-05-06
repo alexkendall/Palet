@@ -139,11 +139,11 @@ func *(lhs:CustomColor , rhs:Float) -> CustomColor
 }
 
 //-------------------------------------------------------------------------
-func generate_shades(var num_shades:Int, inout superview:UIView, var color:CustomColor)
+func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout superview:UIView, var color:CustomColor)
 {
-    var shades = Array<UIButton>();
-    var black = CustomColor(in_red: 0.0, in_green: 0.0, in_blue: 0.0);
-    var white = CustomColor(in_red: 1.0, in_green: 1.0, in_blue: 1.0);
+    shades.removeAll(keepCapacity: true);
+    var black = CustomColor(in_red: 0, in_green: 0, in_blue: 0);
+    var white = CustomColor(in_red: 255, in_green: 255, in_blue: 255);
     if(num_shades % 2 == 0) // should be off number such that base color is in middle
     {
         ++num_shades;
