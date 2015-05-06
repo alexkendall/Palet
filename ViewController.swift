@@ -5,21 +5,19 @@
 //  Created by Alex Harrison on 5/5/15.
 //  Copyright (c) 2015 Alex Harrison. All rights reserved.
 //
-
 import UIKit
 
 class ViewController: UIViewController
 {
     let NUM_SHADES = 9;
-    var current_color = CustomColor(in_red: 0, in_green: 0, in_blue: 0);
+    var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
     var background = UIView();
     var super_view = UIView();
-    var red_slider = UISlider();
-    var green_slider = UISlider();
-    var blue_slider = UISlider();
     var color_view = UIButton();
-    var indicators = Array<UILabel>();
-    var indicator_text = ["R","G","B"];
+    let sliders = [UISlider(), UISlider(), UISlider()];
+    let RED_INDEX = 0, GREEN_INDEX = 1, BLUE_INDEX = 2;
+    var indicators = [UILabel(), UILabel(), UILabel()];
+    let indicator_text = ["R","G","B"];
     var RGB = [UIColor.redColor(), UIColor.greenColor(), UIColor.blueColor()];
     var saved_colors = Array<CustomColor>();
     var shade_view = UIView();
@@ -27,10 +25,26 @@ class ViewController: UIViewController
     var rgb_text = UILabel();
     var save_button = UIButton();
     var shades = Array<UIButton>();
+    var data_controller = DataController();
+    
+    func clear_subviews()
+    {
+        while(background.subviews.count > 0)
+        {
+            background.subviews.first!.removeFromSuperview();
+        }
+
+        while(super_view.subviews.count > 0)
+        {
+            super_view.subviews.first!.removeFromSuperview();
+        }
+        viewDidLoad();
+    }
     
     func selected_shade(sender:UIButton!)
     {
         var shade_color = shades[sender.tag].backgroundColor;
+        
         var red:CGFloat = 0.0, blue:CGFloat = 0.0, green:CGFloat = 0.0, alpha:CGFloat = 0.0;
         shade_color?.getRed(&red, green: &green, blue: &blue, alpha: &alpha);
         red *= 255.0;
@@ -38,20 +52,18 @@ class ViewController: UIViewController
         blue *= 255.0;
         current_color.set(Int(red), in_green: Int(green), in_blue: Int(blue));
         // update slider values
-        red_slider.value = Float(red);
-        green_slider.value = Float(green);
-        blue_slider.value = Float(blue);
+        sliders[RED_INDEX].value = Float(red);
+        sliders[GREEN_INDEX].value = Float(green);
+        sliders[BLUE_INDEX].value = Float(blue);
         moved_slider();
     }
     
     func moved_slider()
     {
         var max_val:CGFloat = 255.0;
-        var red_val:CGFloat = CGFloat(red_slider.value) / max_val;
-        var green_val:CGFloat = CGFloat(green_slider.value) / max_val;
-        var blue_val:CGFloat = CGFloat(blue_slider.value) / max_val;
-
-        
+        var red_val:CGFloat = CGFloat(sliders[RED_INDEX].value) / max_val;
+        var green_val:CGFloat = CGFloat(sliders[GREEN_INDEX].value) / max_val;
+        var blue_val:CGFloat = CGFloat(sliders[BLUE_INDEX].value) / max_val;
         current_color.set(red_val, in_green: green_val, in_blue: blue_val);
         color_view.backgroundColor = current_color.get_UIColor();
         hex_text.text = current_color.hex_string;
@@ -60,11 +72,7 @@ class ViewController: UIViewController
         generate_shades(&shades, NUM_SHADES, &shade_view, current_color);
         for(var i = 0; i < shades.count; ++i)
         {
-            if(shades.count != NUM_SHADES)
-            {
-                println("ERROR INCORRECT NUMBER OF SHADES");
-                exit(-1);
-            }
+            assert(shades.count == NUM_SHADES, "ERROR INCORRECT NUMBER OF SHADES");
             shades[i].addTarget(self, action: "selected_shade:", forControlEvents: UIControlEvents.TouchUpInside);
             shades[i].tag = i; // tag shade so we know which color to update to when shade is selected
         }
@@ -77,7 +85,6 @@ class ViewController: UIViewController
             var green = current_color.rgb_discrete[1];
             var blue = current_color.rgb_discrete[2];
             saved_colors.append(CustomColor(in_red: red, in_green: green, in_blue: blue));
-            //table_view.reloadData();
         }
     }
     
@@ -86,7 +93,6 @@ class ViewController: UIViewController
         super_view = self.view;
         add_subview(background, super_view, 1.0, 1.0, 1.0);
         background.backgroundColor = UIColor.whiteColor();
-        //configure_gradient(&super_view, &background, UIColor.lightGrayColor(), UIColor.whiteColor());
         var super_height:CGFloat = super_view.bounds.width;
         var super_width:CGFloat = super_view.bounds.height;
         var margin:CGFloat = 25.0;
@@ -160,10 +166,6 @@ class ViewController: UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE LABELS IN RHS OF DEVICE
         //-------------------------------------------------------------------------------------------
-        for(var i = 0; i < 3; ++i)
-        {
-            indicators.append(UILabel());
-        }
         for(var i = 0; i < indicators.count; ++i)
         {
             indicators[i].setTranslatesAutoresizingMaskIntoConstraints(false);
@@ -187,7 +189,8 @@ class ViewController: UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE SLIDERS ON TOP LHS OF DEVICE
         //-------------------------------------------------------------------------------------------
-        var sliders = [red_slider, green_slider, blue_slider];
+        //var sliders = [red_slider, green_slider, blue_slider];
+        
         var width = (super_view.bounds.width / 2.0) - (margin * 3.0);
         for(var i = 0; i < sliders.count; ++i)
         {
@@ -196,10 +199,8 @@ class ViewController: UIViewController
             sliders[i].minimumValue = 0.0;
             sliders[i].maximumValue = 255.0;    // RGB 0-255
             sliders[i].minimumTrackTintColor = RGB[i];
-            sliders[i].maximumTrackTintColor = UIColor.blackColor();
             // set current val to 0
-            sliders[i].value = 0;
-            
+            sliders[i].value = 128;
             // add extra margin space on left side to put rgb labels to left of sliders
             var left = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: margin / 2.0);
             var right = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -margin);
@@ -217,7 +218,6 @@ class ViewController: UIViewController
         shade_view.layer.borderWidth = 1.0;
         shade_view.setTranslatesAutoresizingMaskIntoConstraints(false);
         background.addSubview(shade_view);
-        
         var shade_centerx = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant:0.0);
         var shade_width = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant:0.0);
         var shade_top = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[2], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:margin);
@@ -226,15 +226,16 @@ class ViewController: UIViewController
         super_view.addConstraint(shade_width);
         super_view.addConstraint(shade_top);
         super_view.addConstraint(shade_bottom);
-        generate_shades(&shades, NUM_SHADES, &shade_view, current_color);
+        moved_slider();
+        
+        // test for vewcontroller
+        save_button.addTarget(self, action: "clear_subviews", forControlEvents: UIControlEvents.TouchUpInside);
+        
     }
-    
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     //-------------------------------------------------------------------------
-    
 }
-

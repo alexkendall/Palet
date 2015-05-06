@@ -19,6 +19,12 @@ class CustomColor:Equatable
     {
         set(in_red, in_green: in_green, in_blue: in_blue);
     }
+    init(var color:UIColor)
+    {
+        var r:CGFloat = 0.0, g:CGFloat = 0.0, b:CGFloat = 0.0, a:CGFloat = 0.0;
+        color.getRed(&r, green: &g, blue: &b, alpha: &a);
+        set(r, in_green: g, in_blue: b);
+    }
     //-------------------------------------------------------------------------
     func MAX_RGB()->CGFloat
     {
@@ -138,6 +144,14 @@ func *(lhs:CustomColor , rhs:Float) -> CustomColor
     return CustomColor(in_red: red, in_green: green, in_blue: blue);
 }
 
+func /(lhs:CustomColor , rhs:Float) -> CustomColor
+{
+    var red = Int(Float(lhs.red()) / rhs);
+    var green = Int(Float(lhs.green()) / rhs);
+    var blue = Int(Float(lhs.blue()) / rhs);
+    return CustomColor(in_red: red, in_green: green, in_blue: blue);
+}
+
 //-------------------------------------------------------------------------
 func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout superview:UIView, var color:CustomColor)
 {
@@ -191,5 +205,4 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
     
 }
 
-
-
+//-------------------------------------------------------------------------
