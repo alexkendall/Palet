@@ -109,6 +109,12 @@ class CustomColor:Equatable
     }
     //-------------------------------------------------------------------------
     
+    func rgb_str()->String
+    {
+        var discrete_str = String(format:"rgb(%i, %i, %i)",rgb_discrete[0], rgb_discrete[1], rgb_discrete[2]);
+        return discrete_str;
+    }
+    
     func print()
     {
         println(hex_string);

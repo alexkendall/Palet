@@ -10,7 +10,7 @@ var saved_colors = Array<CustomColor>();
 import Foundation
 import UIKit
 
-class SavedColorsController: UIViewController, UITableViewDelegate
+class FavoritesController: UIViewController, UITableViewDelegate
 {
     
     var table_view = UITableView();
@@ -29,22 +29,23 @@ class SavedColorsController: UIViewController, UITableViewDelegate
         super.viewDidLoad()
         superview = self.view;
         superview.backgroundColor = UIColor.whiteColor();
-        add_subview(table_view, superview, 0.8, 0.8, 1.0);
+        add_subview(table_view, superview, margin, margin + toolbar_height, margin, margin);
         
         // configure table view
         table_view.delegate = self;
         table_view.dataSource = app_data;
         table_view.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
-        table_view.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.5);
+        table_view.backgroundColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.8);
+        table_view.layer.borderWidth = 1.0;
+        table_view.layer.borderColor = UIColor.blackColor().CGColor;
         
-        // configure tab bar itemm
-        tabBarItem = UITabBarItem(title: "Colors", image: nil, tag: 1);
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
-        current_color = CustomColor(color: app_data.favorites[indexPath.row]);
+        //current_color = CustomColor(color: app_data.favorites[indexPath.row]);
+        current_color = CustomColor(color: app_data.favorites[app_data.favorites.count - indexPath.row - 1]); // LIFO STACK
         tabBarController?.selectedViewController = picker_controller;
         picker_controller.viewDidLoad();
     }

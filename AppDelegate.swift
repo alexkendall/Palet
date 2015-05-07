@@ -11,8 +11,8 @@ import CoreData
 
 let tab_controller = UITabBarController();
 let picker_controller = ColorController();
-let saved_controller = SavedColorsController();
-let controllers = [picker_controller, saved_controller];
+let favorites_controller = FavoritesController();
+let controllers = [picker_controller, favorites_controller];
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,8 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = tab_controller;
         let firstImage = UIImage(named: "save");
         let secondImage = UIImage(named: "mine_black");
-        picker_controller.tabBarItem = UITabBarItem(title: "picker", image: nil, tag: 1);
-        saved_controller.tabBarItem = UITabBarItem(title: "color", image: nil, tag: 2);
+        picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: nil, tag: 1);
+        favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: nil, tag: 2);
+        tab_controller.tabBar.tintColor = UIColor.blackColor();
         return true
     }
 

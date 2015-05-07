@@ -25,23 +25,19 @@ class ColorController: UIViewController
         return true
     }
     
-    func save_color()
+    func add_favorite()
     {
         var temp = CustomColor(color: current_color);
         
         // enforce no duplicate colors
         if(find(app_data.favorites, current_color) == nil)
         {
-            
             app_data.favorites.append(CustomColor(color: current_color));
-            saved_controller.table_view.reloadData();
-            println(String(format: "Favorite color size is now %d", app_data.favorites.count));
+            favorites_controller.table_view.reloadData();
         }
         else
         {
             var index = find(app_data.favorites, temp);
-            var str = String(format: "Duplicate found at index %i", index!);
-            println(str);
             current_color.print();
             app_data.favorites[index!].print();
         }
@@ -101,7 +97,6 @@ class ColorController: UIViewController
         background.backgroundColor = UIColor.whiteColor();
         var super_height:CGFloat = super_view.bounds.width;
         var super_width:CGFloat = super_view.bounds.height;
-        var margin:CGFloat = 25.0;
         //-------------------------------------------------------------------------------------------
         // CONFIGURE COLOR VIEW IN TOP OF DEVICE
         //-------------------------------------------------------------------------------------------
@@ -237,11 +232,8 @@ class ColorController: UIViewController
         super_view.addConstraint(shade_bottom);
         moved_slider();
         
-        //set tab bar item
-        tabBarItem = UITabBarItem(title: "Picker", image: nil, tag: 0);
-        
         // add action for saving color
-        save_button.addTarget(self, action: "save_color", forControlEvents: UIControlEvents.TouchUpInside);
+        save_button.addTarget(self, action: "add_favorite", forControlEvents: UIControlEvents.TouchUpInside);
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {

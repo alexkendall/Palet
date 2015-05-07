@@ -79,3 +79,32 @@ func configure_gradient(inout super_view:UIView, inout background:UIView, top_co
 }
 
 //-------------------------------------------------------------------------------------------------------------------------
+
+// requires: nothing
+// modifies: subview
+// effects: centers subview to superview, sets height and width to height and width ratios of superview
+func add_subview(var subview:UIView, var superview:UIView, var top_margin:CGFloat, var bottom_margin:CGFloat, var left_margin:CGFloat, var right_margin:CGFloat)
+{
+    subview.setTranslatesAutoresizingMaskIntoConstraints(false);
+    
+    // confogure constraints
+    var left = NSLayoutConstraint(item: subview, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: left_margin);
+    
+    var right = NSLayoutConstraint(item: subview, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -right_margin);
+    
+    var top = NSLayoutConstraint(item: subview, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: top_margin);
+    
+    var bottom = NSLayoutConstraint(item: subview, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: superview, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -bottom_margin);
+    
+    // configure hiearchy
+    superview.addSubview(subview);
+    
+    // apply constraints
+    superview.addConstraint(left);
+    superview.addConstraint(right);
+    superview.addConstraint(top);
+    superview.addConstraint(bottom);
+    
+}
+
+//-------------------------------------------------------------------------------------------------------------------------
