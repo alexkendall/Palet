@@ -18,7 +18,6 @@ class FavoritesController: UIViewController, UITableViewDelegate
     var superview = UIView();
     var saved_colors = [CustomColor(in_red: 0, in_green: 0, in_blue: 1)];
     
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

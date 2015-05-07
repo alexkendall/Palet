@@ -35,11 +35,11 @@ class ColorController: UIViewController
             app_data.favorites.append(CustomColor(color: current_color));
             favorites_controller.table_view.reloadData();
         }
-        else
+        else    // if duplicate -> push selected duplicate to top of stack
         {
             var index = find(app_data.favorites, temp);
-            current_color.print();
-            app_data.favorites[index!].print();
+            app_data.favorites.removeAtIndex(index!);
+            add_favorite();
         }
     }
     
@@ -121,7 +121,7 @@ class ColorController: UIViewController
         //-------------------------------------------------------------------------------------------
         save_button.setTranslatesAutoresizingMaskIntoConstraints(false);
         save_button.backgroundColor = UIColor.lightGrayColor();
-        save_button.setBackgroundImage(UIImage(named: "save"), forState: UIControlState.Normal);
+        save_button.setBackgroundImage(UIImage(named: "favorite"), forState: UIControlState.Normal);
         save_button.layer.borderWidth = 0.5;
         color_view.addSubview(save_button);
         var save_right = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);

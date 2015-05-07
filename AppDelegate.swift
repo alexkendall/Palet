@@ -24,10 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         tab_controller.viewControllers = controllers;
         window?.rootViewController = tab_controller;
-        let firstImage = UIImage(named: "save");
-        let secondImage = UIImage(named: "mine_black");
-        picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: nil, tag: 1);
-        favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: nil, tag: 2);
+        let firstImage = UIImage(named: "picker");
+        let secondImage = UIImage(named: "favorite");
+    
+        picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: firstImage, tag: 1);
+        favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: secondImage, tag: 2);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         return true
     }
