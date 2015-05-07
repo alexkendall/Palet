@@ -1,10 +1,10 @@
 
 import UIKit
+var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
 
 class ColorController: UIViewController
 {
     let NUM_SHADES = 9;
-    var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
     var background = UIView();
     var super_view = UIView();
     var color_view = UIButton();
@@ -19,12 +19,25 @@ class ColorController: UIViewController
     var rgb_text = UILabel();
     var save_button = UIButton();
     var shades = Array<UIButton>();
-    var data_controller = DataController();
     
-    func remove_color_picker()
+    func save_color()
     {
-        //self.presentViewController(data_controller, animated: true, completion: nil);
-        self.view.removeFromSuperview();
+        var temp = CustomColor(color: current_color);
+        // ENFORCE NO DUPLICATES LATER
+        if(find(app_data.favorites, current_color) == nil)
+        {
+
+            app_data.favorites.append(CustomColor(color: current_color));
+            self.view.removeFromSuperview();
+        }
+        else
+        {
+            var index = find(app_data.favorites, temp);
+            var str = String(format: "Duplicate found at index %i", index!);
+            println(str);
+            current_color.print();
+            app_data.favorites[index!].print();
+        }
     }
     
     func selected_shade(sender:UIButton!)
@@ -186,7 +199,7 @@ class ColorController: UIViewController
             sliders[i].maximumValue = 255.0;    // RGB 0-255
             sliders[i].minimumTrackTintColor = RGB[i];
             // set current val to 0
-            sliders[i].value = 128;
+            //sliders[i].value = 128;
             // add extra margin space on left side to put rgb labels to left of sliders
             var left = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: indicators[i], attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: margin / 2.0);
             var right = NSLayoutConstraint(item: sliders[i], attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -margin);
@@ -196,6 +209,9 @@ class ColorController: UIViewController
             super_view.addConstraint(center_y);
             sliders[i].addTarget(self, action: "moved_slider", forControlEvents: UIControlEvents.ValueChanged);
         }
+        sliders[RED_INDEX].value = Float(current_color.red());
+        sliders[GREEN_INDEX].value = Float(current_color.green());
+        sliders[BLUE_INDEX].value = Float(current_color.blue());
         
         //-------------------------------------------------------------------------------------------
         // CONFIGURE SHADE VIEW OF BUTTONS
@@ -207,7 +223,7 @@ class ColorController: UIViewController
         var shade_centerx = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant:0.0);
         var shade_width = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant:0.0);
         var shade_top = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: indicators[2], attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:margin);
-        var shade_bottom = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:-margin);
+        var shade_bottom = NSLayoutConstraint(item: shade_view, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant:-(margin + toolbar_height));
         super_view.addConstraint(shade_centerx);
         super_view.addConstraint(shade_width);
         super_view.addConstraint(shade_top);
@@ -215,7 +231,7 @@ class ColorController: UIViewController
         moved_slider();
         
         // test for vewcontroller
-        save_button.addTarget(self, action: "remove_color_picker", forControlEvents: UIControlEvents.TouchUpInside);
+        save_button.addTarget(self, action: "save_color", forControlEvents: UIControlEvents.TouchUpInside);
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {

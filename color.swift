@@ -21,11 +21,17 @@ class CustomColor:Equatable
     {
         set(in_red, in_green: in_green, in_blue: in_blue);
     }
+       //-------------------------------------------------------------------------
     init(var color:UIColor)
     {
         var r:CGFloat = 0.0, g:CGFloat = 0.0, b:CGFloat = 0.0, a:CGFloat = 0.0;
         color.getRed(&r, green: &g, blue: &b, alpha: &a);
         set(r, in_green: g, in_blue: b);
+    }
+       //-------------------------------------------------------------------------
+    init(var color:CustomColor) // copy consturctor
+    {
+        self.set(color.red(), in_green: color.green(), in_blue: color.blue());
     }
     //-------------------------------------------------------------------------
     func MAX_RGB()->CGFloat
@@ -105,12 +111,15 @@ class CustomColor:Equatable
     
     func print()
     {
+        println(hex_string);
+        /*
        var discrete_str = String(format: "RGB Discrete: R:% i, G:%i, B:%i\n",rgb_discrete[0], rgb_discrete[1], rgb_discrete[2]);
        
         var contin_str = String(format: "RGB Continuous: R:%.2f, G:%.2f, B:%.2f\n",rgb_continuous[0], rgb_continuous[1], rgb_continuous[2]);
         
         println(discrete_str);
         println(contin_str);
+        */
     }
     //-------------------------------------------------------------------------
     // data
