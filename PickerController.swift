@@ -17,7 +17,8 @@ class ColorController: UIViewController
     var shade_view = UIView();
     var hex_text = UILabel();
     var rgb_text = UILabel();
-    var save_button = UIButton();
+    var favorite_button = UIButton();
+    var add_button = UIButton()
     var shades = Array<UIButton>();
     
     override func prefersStatusBarHidden() -> Bool
@@ -25,20 +26,25 @@ class ColorController: UIViewController
         return true
     }
     
+    func add_to_pallette()
+    {
+        println("Adding color to palette");
+    }
+    
     func add_favorite()
     {
         var temp = CustomColor(color: current_color);
         
         // enforce no duplicate colors
-        if(find(app_data.favorites, current_color) == nil)
+        if(find(favorites_data.colors, current_color) == nil)
         {
-            app_data.favorites.append(CustomColor(color: current_color));
+            favorites_data.colors.append(CustomColor(color: current_color));
             favorites_controller.table_view.reloadData();
         }
         else    // if duplicate -> push selected duplicate to top of stack
         {
-            var index = find(app_data.favorites, temp);
-            app_data.favorites.removeAtIndex(index!);
+            var index = find(favorites_data.colors, temp);
+            favorites_data.colors.removeAtIndex(index!);
             add_favorite();
         }
     }
@@ -119,20 +125,42 @@ class ColorController: UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE SAVE BUTTON IN COLOR VIEW
         //-------------------------------------------------------------------------------------------
-        save_button.setTranslatesAutoresizingMaskIntoConstraints(false);
-        save_button.backgroundColor = UIColor.lightGrayColor();
-        save_button.setBackgroundImage(UIImage(named: "favorite"), forState: UIControlState.Normal);
-        save_button.layer.borderWidth = 0.5;
-        color_view.addSubview(save_button);
-        var save_right = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);
-        var save_bottom = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0.0);
-        var save_height = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: save_button, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin * 1.25);
-        var save_width = NSLayoutConstraint(item: save_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: save_button, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: margin * 1.25);
+        favorite_button.setTranslatesAutoresizingMaskIntoConstraints(false);
+        favorite_button.backgroundColor = UIColor.lightGrayColor();
+        favorite_button.setBackgroundImage(UIImage(named: "favorite"), forState: UIControlState.Normal);
+        favorite_button.layer.borderWidth = 0.5;
+        color_view.addSubview(favorite_button);
+        var save_right = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);
+        var save_bottom = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0.0);
+        var save_height = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin * 1.25);
+        var save_width = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: margin * 1.25);
         // add constraints
         color_view.addConstraint(save_right);
         color_view.addConstraint(save_bottom);
         color_view.addConstraint(save_height);
         color_view.addConstraint(save_width);
+        
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE ADD BUTTON IN COLOR VIEW
+        //-------------------------------------------------------------------------------------------
+
+        add_button.backgroundColor = UIColor.lightGrayColor();
+        add_button.layer.borderWidth = 0.5;
+        add_button.setBackgroundImage(UIImage(named: "plus"), forState: UIControlState.Normal);
+        add_button.setTranslatesAutoresizingMaskIntoConstraints(false);
+        color_view.addSubview(add_button);
+        
+        var add_right = NSLayoutConstraint(item: add_button, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 0.0);
+        var add_bottom = NSLayoutConstraint(item: add_button, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0.0);
+        
+        var add_height = NSLayoutConstraint(item: add_button, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: 0.0);
+        var add_width = NSLayoutConstraint(item: add_button, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0.0);
+        
+        // add constraints
+        color_view.addConstraint(add_right);
+        color_view.addConstraint(add_bottom);
+        color_view.addConstraint(add_height);
+        color_view.addConstraint(add_width);
         
         //-------------------------------------------------------------------------------------------
         // CONFIGURE HEXIDECIMAL TEXT VIEW UNDER COLOR VIEW
@@ -232,8 +260,10 @@ class ColorController: UIViewController
         super_view.addConstraint(shade_bottom);
         moved_slider();
         
-        // add action for saving color
-        save_button.addTarget(self, action: "add_favorite", forControlEvents: UIControlEvents.TouchUpInside);
+        // add target for saving color
+        favorite_button.addTarget(self, action: "add_favorite", forControlEvents: UIControlEvents.TouchUpInside);
+        // add target for adding color to palette
+        add_button.addTarget(self, action: "add_to_pallette", forControlEvents: UIControlEvents.TouchUpInside);
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {

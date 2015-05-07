@@ -6,13 +6,11 @@ import UIKit
 //--- global structs
 var toolbar_height:CGFloat = 49.0;
 var margin:CGFloat = 25.0;
-var CELL_TAG_CONST = -2;
 //--- global structs
 
-class Data:NSObject, UITableViewDataSource  // data source of favorite color data
+class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite color data
 {
-    var NEXT_PALETTE_ID:UInt64 = 0;
-    var favorites = Array<CustomColor>();
+    var colors = Array<CustomColor>();
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
@@ -35,7 +33,7 @@ class Data:NSObject, UITableViewDataSource  // data source of favorite color dat
         var cell_width:CGFloat = cell.frame.size.width;
         
         // configure view that will hold color
-        var custom_color = favorites[favorites.count - 1 - indexPath.row];  // STACK (LIFO)
+        var custom_color = colors[favorites_data.colors.count - 1 - indexPath.row];  // STACK (LIFO)
         var color_view = UIView();
         color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
         color_view.backgroundColor = custom_color.get_UIColor();
@@ -84,17 +82,37 @@ class Data:NSObject, UITableViewDataSource  // data source of favorite color dat
         var center_yrgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: cell, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
         cell.addConstraint(center_rgb);
         cell.addConstraint(center_yrgb);
-        cell.tag = CELL_TAG_CONST;
-        
         return cell;
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        return favorites.count;
+        return colors.count;
     }
 }
 
-var app_data:Data = Data();
+class PalettesData:NSObject, UITableViewDataSource
+{
+    var NEXT_PALETTE_ID:UInt64 = 0;
+    var palettes = Array<Palette>();
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    {
+        return palettes.count;
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    {
+        var cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! UITableViewCell;
+        return cell;
+    }
+    
+}
+
+var favorites_data:FavoritesData = FavoritesData();
+var palette_data:PalettesData = PalettesData();
+
+
+
 
 
 

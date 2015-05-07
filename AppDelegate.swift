@@ -12,7 +12,9 @@ import CoreData
 let tab_controller = UITabBarController();
 let picker_controller = ColorController();
 let favorites_controller = FavoritesController();
-let controllers = [picker_controller, favorites_controller];
+let pallettes_controller = PaletteControler();
+let controllers = [picker_controller, favorites_controller, pallettes_controller];
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,9 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = tab_controller;
         let firstImage = UIImage(named: "picker");
         let secondImage = UIImage(named: "favorite");
-    
         picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: firstImage, tag: 1);
         favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: secondImage, tag: 2);
+        pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: nil, tag: 3);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         return true
     }
