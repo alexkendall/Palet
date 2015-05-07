@@ -9,6 +9,11 @@
 import UIKit
 import CoreData
 
+let tab_controller = UITabBarController();
+let picker_controller = ColorController();
+let saved_controller = SavedColorsController();
+let controllers = [picker_controller, saved_controller];
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -17,6 +22,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        tab_controller.viewControllers = controllers;
+        window?.rootViewController = tab_controller;
+        let firstImage = UIImage(named: "save");
+        let secondImage = UIImage(named: "mine_black");
+        picker_controller.tabBarItem = UITabBarItem(title: "picker", image: nil, tag: 1);
+        saved_controller.tabBarItem = UITabBarItem(title: "color", image: nil, tag: 2);
         return true
     }
 

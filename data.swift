@@ -3,7 +3,7 @@
 import Foundation
 import UIKit
 
-var toolbar_height:CGFloat = 35.0;
+var toolbar_height:CGFloat = 49.0;
 
 class Data:NSObject, UITableViewDataSource
 {

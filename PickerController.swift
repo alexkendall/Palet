@@ -20,15 +20,22 @@ class ColorController: UIViewController
     var save_button = UIButton();
     var shades = Array<UIButton>();
     
+    override func prefersStatusBarHidden() -> Bool
+    {
+        return true
+    }
+    
     func save_color()
     {
         var temp = CustomColor(color: current_color);
-        // ENFORCE NO DUPLICATES LATER
+        
+        // enforce no duplicate colors
         if(find(app_data.favorites, current_color) == nil)
         {
-
+            
             app_data.favorites.append(CustomColor(color: current_color));
-            self.view.removeFromSuperview();
+            saved_controller.table_view.reloadData();
+            println(String(format: "Favorite color size is now %d", app_data.favorites.count));
         }
         else
         {
@@ -230,7 +237,10 @@ class ColorController: UIViewController
         super_view.addConstraint(shade_bottom);
         moved_slider();
         
-        // test for vewcontroller
+        //set tab bar item
+        tabBarItem = UITabBarItem(title: "Picker", image: nil, tag: 0);
+        
+        // add action for saving color
         save_button.addTarget(self, action: "save_color", forControlEvents: UIControlEvents.TouchUpInside);
     }
     //-------------------------------------------------------------------------

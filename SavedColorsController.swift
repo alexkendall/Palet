@@ -12,6 +12,7 @@ import UIKit
 
 class SavedColorsController: UIViewController, UITableViewDelegate
 {
+    
     var table_view = UITableView();
     var background = UIView();
     var superview = UIView();
@@ -36,14 +37,20 @@ class SavedColorsController: UIViewController, UITableViewDelegate
         table_view.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
         table_view.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.5);
+        
+        // configure tab bar itemm
+        tabBarItem = UITabBarItem(title: "Colors", image: nil, tag: 1);
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
         current_color = CustomColor(color: app_data.favorites[indexPath.row]);
-        self.view.removeFromSuperview();
-        // go directly to Color Picker
-        var parent:MainController = parentViewController as! MainController;
-        parent.bringUpColorPicker();
+        tabBarController?.selectedViewController = picker_controller;
+        picker_controller.viewDidLoad();
+    }
+    
+    override func prefersStatusBarHidden() -> Bool
+    {
+        return true
     }
 }
