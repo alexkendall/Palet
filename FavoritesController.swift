@@ -38,8 +38,6 @@ class FavoritesController: UIViewController, UITableViewDelegate
         table_view.backgroundColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.8);
         table_view.layer.borderWidth = 1.0;
         table_view.layer.borderColor = UIColor.blackColor().CGColor;
-        
-        
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)

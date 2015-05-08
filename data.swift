@@ -103,11 +103,19 @@ class PalettesData:NSObject, UITableViewDataSource
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
         var cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! UITableViewCell;
-        cell.backgroundColor = UIColor.whiteColor();
         cell.layer.borderWidth = 1.0;
         cell.layer.borderColor = UIColor.blackColor().CGColor;
         cell.textLabel?.text = palette_data.palettes[indexPath.row].palette_name;
-        cell.textLabel?.textColor = UIColor.blackColor();
+        if(tableView.tag == -5)
+        {
+            cell.backgroundColor = UIColor.grayColor();
+            cell.textLabel?.textColor = UIColor.whiteColor();
+        }
+        else
+        {
+            cell.backgroundColor = UIColor.whiteColor();
+            cell.textLabel?.textColor = UIColor.blackColor();
+        }
         return cell;
     }
     

@@ -37,7 +37,17 @@ class PaletteControler:UIViewController, UITableViewDelegate
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
         var name = palette_data.palettes[indexPath.row].palette_name;
-        println("selected palette named " + name);
+        if(tableView.tag == -5)
+        {
+            palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
+            //println("adding color " + current_color.hex_string + " to palette named " + name);
+            //println("palette size is now " + String(palette_data.palettes[indexPath.row].colors.count));
+            
+        }
+        else
+        {
+            //println("selected palette named " + name);
+        }
     }
     
     override func prefersStatusBarHidden() -> Bool

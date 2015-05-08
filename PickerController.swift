@@ -300,10 +300,15 @@ class PaletteWindowController:UIViewController
     
     func add_new_palette()
     {
-        var name = enter_text.text;
-        var new_palette = Palette(name: enter_text.text);
-        palette_data.palettes.append(new_palette);
-        enter_text.text = "";   // reset text
+        if(enter_text.text != "")   // don't allow user to name palette the empty string
+        {
+            enter_text.endEditing(true);  // remove keybaord
+            var name = enter_text.text;
+            var new_palette = Palette(name: enter_text.text);
+            palette_data.palettes.append(new_palette);
+            enter_text.text = "";   // reset text
+            palette_table.reloadData();
+        }
     }
     
     func enter_name()
@@ -354,9 +359,15 @@ class PaletteWindowController:UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE ADD TABLE VIEW
         //-------------------------------------------------------------------------------------------
+        palette_table.dataSource = palette_data;
+        palette_table.delegate = pallettes_controller;
         add_subview(palette_table, super_view, picker_height, 0.0, 0.0, 0.0);
-        palette_table.backgroundColor = UIColor.blackColor();
+        palette_table.backgroundColor = UIColor.lightGrayColor();
         palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
+        palette_table.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
+        
+        // tag table so we can use different color cells fromt those in PaletteController
+        palette_table.tag = -5;
     }
     
     override func viewDidAppear(animated: Bool)
