@@ -308,6 +308,7 @@ class PaletteWindowController:UIViewController
             palette_data.palettes.append(new_palette);
             enter_text.text = "";   // reset text
             palette_table.reloadData();
+            pallettes_controller.table_view.reloadData();
         }
     }
     

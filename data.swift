@@ -106,16 +106,8 @@ class PalettesData:NSObject, UITableViewDataSource
         cell.layer.borderWidth = 1.0;
         cell.layer.borderColor = UIColor.blackColor().CGColor;
         cell.textLabel?.text = palette_data.palettes[indexPath.row].palette_name;
-        if(tableView.tag == -5)
-        {
-            cell.backgroundColor = UIColor.grayColor();
-            cell.textLabel?.textColor = UIColor.whiteColor();
-        }
-        else
-        {
-            cell.backgroundColor = UIColor.whiteColor();
-            cell.textLabel?.textColor = UIColor.blackColor();
-        }
+        cell.backgroundColor = UIColor.grayColor();
+        cell.textLabel?.textColor = UIColor.whiteColor();
         return cell;
     }
     
