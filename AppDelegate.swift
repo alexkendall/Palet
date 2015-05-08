@@ -13,7 +13,7 @@ let tab_controller = UITabBarController();
 let picker_controller = ColorController();
 let favorites_controller = FavoritesController();
 let pallettes_controller = PaletteControler();
-let controllers = [picker_controller, favorites_controller, pallettes_controller];
+let controllers = [favorites_controller,picker_controller, pallettes_controller];
 
 
 @UIApplicationMain
@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: secondImage, tag: 2);
         pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: nil, tag: 3);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
+        tab_controller.selectedViewController = picker_controller;
         return true
     }
 

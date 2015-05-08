@@ -108,3 +108,10 @@ func add_subview(var subview:UIView, var superview:UIView, var top_margin:CGFloa
 }
 
 //-------------------------------------------------------------------------------------------------------------------------
+
+func print(var cordinates:CGRect)
+{
+    println(String(format: "(x, y, width, height) = (%f, %f, %f, %f)", cordinates.origin.x, cordinates.origin.y, cordinates.width, cordinates.height));
+}
+
+//-------------------------------------------------------------------------------------------------------------------------

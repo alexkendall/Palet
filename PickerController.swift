@@ -1,6 +1,7 @@
 
 import UIKit
 var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
+var color_height = 5.0 * margin;
 
 class ColorController: UIViewController
 {
@@ -20,6 +21,9 @@ class ColorController: UIViewController
     var favorite_button = UIButton();
     var add_button = UIButton()
     var shades = Array<UIButton>();
+    var pallete_window = PaletteWindowController();
+    var pallete_switch = true;
+    
     
     override func prefersStatusBarHidden() -> Bool
     {
@@ -28,7 +32,18 @@ class ColorController: UIViewController
     
     func add_to_pallette()
     {
-        println("Adding color to palette");
+        if(pallete_switch == true)
+        {
+            add_button.backgroundColor = UIColor.blackColor();
+            super_view.addSubview(pallete_window.view);
+            pallete_switch = false;
+        }
+        else
+        {
+            add_button.backgroundColor = UIColor.lightGrayColor();
+            pallete_window.view.removeFromSuperview();
+            pallete_switch = true;
+        }
     }
     
     func add_favorite()
@@ -114,7 +129,7 @@ class ColorController: UIViewController
         var left = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: margin);
         var top = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: margin);
         var right = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: background, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -margin);
-        var height = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 0.0, constant: margin * 5.0);
+        var height = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Width, multiplier: 0.0, constant: color_height);
         // add constraints
         super_view.addConstraint(left);
         super_view.addConstraint(top);
@@ -264,6 +279,8 @@ class ColorController: UIViewController
         favorite_button.addTarget(self, action: "add_favorite", forControlEvents: UIControlEvents.TouchUpInside);
         // add target for adding color to palette
         add_button.addTarget(self, action: "add_to_pallette", forControlEvents: UIControlEvents.TouchUpInside);
+        
+        self.addChildViewController(pallete_window);
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {
@@ -272,3 +289,81 @@ class ColorController: UIViewController
     }
     //-------------------------------------------------------------------------
 }
+
+class PaletteWindowController:UIViewController
+{
+    var super_view = UIView();
+    var text_background = UIView();
+    var enter_text = UITextField();
+    var commit_button = UIButton();
+    var palette_table = UITableView();
+    
+    func enter_name()
+    {
+        super_view.setNeedsLayout();
+        super_view.layoutIfNeeded();
+        var frame_height = super_view.frame.height;
+        var frame_width = super_view.frame.width;
+        var text_height = margin * 2.0;
+        enter_text.backgroundColor = UIColor.whiteColor();
+        enter_text.placeholder = "Add New Palette";
+        add_subview(enter_text, super_view, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
+        enter_text.setNeedsLayout();
+        enter_text.layoutIfNeeded();
+        var commit_width = text_height;
+        commit_button.backgroundColor = UIColor.grayColor();
+        commit_button.setTitle("ADD", forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
+        add_subview(commit_button, super_view, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
+    }
+
+    override func viewDidLoad()
+    {
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE SUPER VIEW BOUNDS AND FRAMES
+        //-------------------------------------------------------------------------------------------
+        super.viewDidLoad();
+        super_view = self.view;
+        var init_frame = super_view.frame;
+        var frame_width = init_frame.width - (2.0 * margin);
+        var frame_height = init_frame.height - margin - color_height - margin - toolbar_height + 1.0;
+        var x = margin;
+        var y = margin + color_height - 1.0;
+        super_view.frame = CGRect(x: x, y: y, width: frame_width, height: frame_height);
+        super_view.backgroundColor = UIColor.lightGrayColor();
+        super_view.layer.borderWidth = 1.0;
+        
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE ADD PICKER TEXT VIEW
+        //-------------------------------------------------------------------------------------------
+        var picker_height = margin * 2.0;
+        text_background.backgroundColor = UIColor.whiteColor();
+        text_background.layer.borderWidth = 1.0;
+        add_subview(text_background, super_view, 0.0, frame_height - picker_height, 0.0, 0.0);
+        enter_name();
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE ADD TABLE VIEW
+        //-------------------------------------------------------------------------------------------
+        add_subview(palette_table, super_view, picker_height, 0.0, 0.0, 0.0);
+        palette_table.backgroundColor = UIColor.blackColor();
+        palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
+    }
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated);
+    }
+    
+    override func didReceiveMemoryWarning()
+    {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+}
+
+
+
+
+
