@@ -28,7 +28,7 @@ class PaletteControler:UIViewController, UITableViewDelegate
         table_view.dataSource = palette_data;
         table_view.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
-        table_view.backgroundColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.8);
+        table_view.backgroundColor = UIColor.lightGrayColor();
         table_view.layer.borderWidth = 1.0;
         table_view.layer.borderColor = UIColor.blackColor().CGColor;
         
@@ -49,7 +49,7 @@ class PaletteControler:UIViewController, UITableViewDelegate
             color_grid.current_index = indexPath.row;
             self.view.addSubview(color_grid.view); // bring up color grid
             color_grid.exit.addTarget(self, action: "remove_grid", forControlEvents: UIControlEvents.TouchUpInside);
-            color_grid.title_label.text = "Palette: " + name;
+            color_grid.title_label.text = name;
             color_grid.add_colors();
             
         }
@@ -77,6 +77,7 @@ class GridController:UIViewController
     var current_index:Int = -1;
     override func viewDidLoad()
     {
+        super.viewDidLoad();
         super_view = self.view;
         super_view.backgroundColor = UIColor.whiteColor();
         var super_width = super_view.bounds.width;
@@ -90,18 +91,29 @@ class GridController:UIViewController
         title_label.layer.borderWidth = 1.0;
         add_subview(title_label, super_view, margin, super_view.bounds.height - title_margin - margin, margin, margin);
         
-        // configure exit button
-        add_subview(exit, super_view, 0.0, super_height - exit_width, super_width - exit_width, 0.0);
-        exit.backgroundColor = UIColor.blackColor();
-        exit.setTitle("X", forState: UIControlState.Normal);
-        exit.titleLabel?.font = UIFont.systemFontOfSize(15.0);
-        
         // configure scroll view
         add_subview(scroll, super_view, title_margin, margin + toolbar_height, margin, margin);
         scroll.backgroundColor = UIColor.lightGrayColor();
         scroll.layer.borderWidth = 1.0;
-        super.viewDidLoad()
+        scroll.scrollEnabled = true;
+        scroll.clipsToBounds = true;
+        
+        // configure exit button
+        add_subview(exit, super_view, margin, super_height - margin - exit_width, super_width - margin - exit_width, margin);
+        exit.backgroundColor = UIColor.blackColor();
+        exit.setTitle("X", forState: UIControlState.Normal);
+        exit.titleLabel?.font = UIFont.systemFontOfSize(15.0);
     }
+    
+    func selected_color(sender:UIButton!)
+    {
+        var color_index = sender.tag;
+        var color = CustomColor(color: palette_data.palettes[current_index].colors[color_index]);
+        current_color = color;
+        tab_controller.selectedViewController = picker_controller;
+        picker_controller.viewDidLoad();
+    }
+    
     
     func add_colors()
     {
@@ -109,20 +121,38 @@ class GridController:UIViewController
         {
             EXIT_FAILURE;
         }
+        // clear scroll
+        var subs = scroll.subviews;
+        for(var i = 0; i < subs.count; ++i)
+        {
+            subs[i].removeFromSuperview();
+        }
+        
         scroll.setNeedsLayout();
         scroll.layoutIfNeeded();
         var color_width = (scroll.bounds.width - (margin * 3.0)) / 2.0;
         var color_height = color_width;
+        
         // iterate through each color in palette
         var count = palette_data.palettes[current_index].colors.count;
-        println(count);
         var j = -1;
+
         for(var i = 0; i < count; ++i)
         {
             var color_view = UIButton();
+            color_view.layer.borderWidth = 1.0;
+            color_view.layer.borderColor = UIColor.blackColor().CGColor;
             color_view.backgroundColor = palette_data.palettes[current_index].colors[i].get_UIColor();
             color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
             scroll.addSubview(color_view);
+            color_view.addTarget(self, action: "selected_color:", forControlEvents: UIControlEvents.TouchUpInside);
+            color_view.tag = i;
+            
+            var hex_label = UILabel();
+            hex_label.text = palette_data.palettes[current_index].colors[i].hex_string;
+            hex_label.textColor = UIColor.whiteColor();
+            add_subview(hex_label, color_view, 0.0, color_width - margin, 3.0, 0.0);
+            
             
             var distFromLeft:CGFloat = CGFloat();
             if((i % 2) == 0)    // even
@@ -149,7 +179,10 @@ class GridController:UIViewController
             scroll.addConstraint(height_constr);
             scroll.addConstraint(top_constr);
             scroll.addConstraint(left_constr);
+
         }
+        var content_height:CGFloat = (color_height + (margin * 2.0)) * CGFloat((ceil(Double(count) / 2.0)) * 2.0) / 2.0;
+        scroll.contentSize = CGSize(width: scroll.bounds.width, height: content_height);
     }
     
     //-------------------------------------------------------------------------
