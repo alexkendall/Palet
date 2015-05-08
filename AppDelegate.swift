@@ -28,9 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = tab_controller;
         let firstImage = UIImage(named: "picker");
         let secondImage = UIImage(named: "favorite");
+        let third_image = UIImage(named: "color_palette");
         picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: firstImage, tag: 1);
         favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: secondImage, tag: 2);
-        pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: nil, tag: 3);
+        pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: third_image, tag: 3);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         tab_controller.selectedViewController = picker_controller;
         return true

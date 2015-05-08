@@ -148,10 +148,12 @@ class GridController:UIViewController
             color_view.addTarget(self, action: "selected_color:", forControlEvents: UIControlEvents.TouchUpInside);
             color_view.tag = i;
             
+            /*
             var hex_label = UILabel();
             hex_label.text = palette_data.palettes[current_index].colors[i].hex_string;
             hex_label.textColor = UIColor.whiteColor();
             add_subview(hex_label, color_view, 0.0, color_width - margin, 3.0, 0.0);
+            */
             
             
             var distFromLeft:CGFloat = CGFloat();
