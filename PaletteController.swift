@@ -36,7 +36,8 @@ class PaletteControler:UIViewController, UITableViewDelegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
-        println("selected");
+        var name = palette_data.palettes[indexPath.row].palette_name;
+        println("selected palette named " + name);
     }
     
     override func prefersStatusBarHidden() -> Bool

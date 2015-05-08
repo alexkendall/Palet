@@ -298,6 +298,14 @@ class PaletteWindowController:UIViewController
     var commit_button = UIButton();
     var palette_table = UITableView();
     
+    func add_new_palette()
+    {
+        var name = enter_text.text;
+        var new_palette = Palette(name: enter_text.text);
+        palette_data.palettes.append(new_palette);
+        enter_text.text = "";   // reset text
+    }
+    
     func enter_name()
     {
         super_view.setNeedsLayout();
@@ -306,7 +314,7 @@ class PaletteWindowController:UIViewController
         var frame_width = super_view.frame.width;
         var text_height = margin * 2.0;
         enter_text.backgroundColor = UIColor.whiteColor();
-        enter_text.placeholder = "Add New Palette";
+        enter_text.placeholder = "Create New Palette";
         add_subview(enter_text, super_view, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
@@ -316,6 +324,7 @@ class PaletteWindowController:UIViewController
         commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
         commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
         add_subview(commit_button, super_view, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
+        commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
     }
 
     override func viewDidLoad()
