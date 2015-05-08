@@ -6,6 +6,7 @@ import UIKit
 //--- global structs
 var toolbar_height:CGFloat = 49.0;
 var margin:CGFloat = 25.0;
+var current_palette_index = -1;
 //--- global structs
 
 class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite color data

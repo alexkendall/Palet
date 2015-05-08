@@ -1,4 +1,3 @@
-
 // file holding palette controller class
 
 import Foundation
@@ -40,15 +39,18 @@ class PaletteControler:UIViewController, UITableViewDelegate
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
         var name = palette_data.palettes[indexPath.row].palette_name;
+        current_palette_index = indexPath.row;
         if(tableView.tag == -5)
         {
             palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
         }
         else
         {
+            color_grid.current_index = indexPath.row;
             self.view.addSubview(color_grid.view); // bring up color grid
             color_grid.exit.addTarget(self, action: "remove_grid", forControlEvents: UIControlEvents.TouchUpInside);
             color_grid.title_label.text = "Palette: " + name;
+            color_grid.add_colors();
             
         }
     }
@@ -72,6 +74,7 @@ class GridController:UIViewController
     var exit = UIButton();
     var scroll = UIScrollView();
     var title_margin = margin * 3.0;
+    var current_index:Int = -1;
     override func viewDidLoad()
     {
         super_view = self.view;
@@ -79,7 +82,6 @@ class GridController:UIViewController
         var super_width = super_view.bounds.width;
         var super_height = super_view.bounds.height;
         var exit_width = margin;
-        
         
         // configure title label
         title_label.textColor = UIColor.blackColor();
@@ -98,9 +100,56 @@ class GridController:UIViewController
         add_subview(scroll, super_view, title_margin, margin + toolbar_height, margin, margin);
         scroll.backgroundColor = UIColor.lightGrayColor();
         scroll.layer.borderWidth = 1.0;
-        
-        
         super.viewDidLoad()
+    }
+    
+    func add_colors()
+    {
+        if(current_index < 0 || (current_index > (palette_data.palettes.count - 1)))
+        {
+            EXIT_FAILURE;
+        }
+        scroll.setNeedsLayout();
+        scroll.layoutIfNeeded();
+        var color_width = (scroll.bounds.width - (margin * 3.0)) / 2.0;
+        var color_height = color_width;
+        // iterate through each color in palette
+        var count = palette_data.palettes[current_index].colors.count;
+        println(count);
+        var j = -1;
+        for(var i = 0; i < count; ++i)
+        {
+            var color_view = UIButton();
+            color_view.backgroundColor = palette_data.palettes[current_index].colors[i].get_UIColor();
+            color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
+            scroll.addSubview(color_view);
+            
+            var distFromLeft:CGFloat = CGFloat();
+            if((i % 2) == 0)    // even
+            {
+                ++j;
+                distFromLeft = margin;
+            }
+            else    // odd
+            {
+                distFromLeft = (margin * 2.0) + color_width;
+            }
+            var distFromTop = margin + ((color_height + (margin * 2.0)) * CGFloat(j));
+            
+            // add constraints
+            var width_constr = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: scroll, attribute: NSLayoutAttribute.Width, multiplier: 0.0, constant: color_width);
+            
+            var height_constr = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: scroll, attribute: NSLayoutAttribute.Height, multiplier: 0.0, constant: color_height);
+            
+            var top_constr = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: scroll, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: distFromTop);
+            
+            var left_constr = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: scroll, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: distFromLeft);
+            
+            scroll.addConstraint(width_constr);
+            scroll.addConstraint(height_constr);
+            scroll.addConstraint(top_constr);
+            scroll.addConstraint(left_constr);
+        }
     }
     
     //-------------------------------------------------------------------------
