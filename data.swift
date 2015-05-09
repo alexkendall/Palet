@@ -22,7 +22,7 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
         {
             subs[i].removeFromSuperview();
         }
-        cell.backgroundColor = UIColor.whiteColor(); 
+        cell.backgroundColor = UIColor.whiteColor();
         cell.layer.borderWidth = 0.5;
         
         //-----------------------------------------------------------------------------
@@ -83,6 +83,7 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
         var center_yrgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: cell, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
         cell.addConstraint(center_rgb);
         cell.addConstraint(center_yrgb);
+        cell.selectionStyle = UITableViewCellSelectionStyle.None;        
         return cell;
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int

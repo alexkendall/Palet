@@ -43,38 +43,31 @@ class PaletteControler:UIViewController, UITableViewDelegate
         if(tableView.tag == ADD_PALETTE_TABLE_TAG) // add color to palette
         {
             var row = indexPath.row;
-            
             var dupl_index = -1;
             if(find(get_palette(row).colors, current_color) == nil) // color not already in palette
             {
                 
                 palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
                 
-                //notification_text = "added color " + current_color.hex_string + " to " + name;
+                picker_controller.notification_controller.set_text("Added " + current_color.hex_string + " to " + name);
             }
             else
             {
-                //notification_text = "Unable to add duplicate color " + current_color.hex_string + " to " + name;
+               picker_controller.notification_controller.set_text("Color " + current_color.hex_string + " already in " + name);
             }
-            show_notification();
-            
+            picker_controller.notification_controller.bring_up();
         }
         else
         {
+            color_grid.info_controller.view.removeFromSuperview();
             color_grid.current_index = indexPath.row;
             self.view.addSubview(color_grid.view); // bring up color grid
             color_grid.exit.addTarget(self, action: "remove_grid", forControlEvents: UIControlEvents.TouchUpInside);
             color_grid.title_label.text = name;
             color_grid.add_colors();
         }
-        show_notification();
     }
     
-    func show_notification()
-    {
-        println("here");
-        //superview.addSubview(notification.view);
-    }
     
     func remove_grid()
     {
@@ -96,6 +89,10 @@ class GridController:UIViewController
     var scroll = UIScrollView();
     var title_margin = margin * 3.0;
     var current_index:Int = -1;
+    var current_selected_color:Int = -1;
+    var colors = Array<UIButton>();
+    var info_controller = ColorInfoController()
+    
     override func viewDidLoad()
     {
         super.viewDidLoad();
@@ -120,24 +117,52 @@ class GridController:UIViewController
         scroll.clipsToBounds = true;
         
         // configure exit button
-        add_subview(exit, super_view, margin, super_height - margin - exit_width, super_width - margin - exit_width, margin);
-        exit.backgroundColor = UIColor.blackColor();
+        add_subview(exit, super_view, margin, super_height - margin - exit_width - 1.0, super_width - margin - exit_width, margin);
+        exit.backgroundColor = UIColor.lightGrayColor();
         exit.setTitle("X", forState: UIControlState.Normal);
-        exit.titleLabel?.font = UIFont.systemFontOfSize(25.0);
+        exit.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
+        exit.titleLabel?.font = UIFont.systemFontOfSize(50.0);
+        exit.layer.borderWidth = 1.0;
+        
+        // add child controller
+        self.addChildViewController(info_controller);
+        
     }
     
     func selected_color(sender:UIButton!)
     {
-        var color_index = sender.tag;
-        var color = CustomColor(color: palette_data.palettes[current_index].colors[color_index]);
-        current_color = color;
-        tab_controller.selectedViewController = picker_controller;
-        picker_controller.viewDidLoad();
+        if((current_selected_color > -1))
+        {
+            colors[current_selected_color].layer.borderWidth = 1.0;
+            colors[current_selected_color].layer.borderColor = UIColor.blackColor().CGColor;
+        }
+        if(current_selected_color != sender.tag)
+        {
+            current_selected_color = sender.tag; // update current selected color from palette
+            var color_index = sender.tag;
+            var color = CustomColor(color: palette_data.palettes[current_index].colors[color_index]);
+            sender.layer.borderWidth = 3.0;
+            sender.layer.borderColor = UIColor.whiteColor().CGColor;
+            current_color = color;
+            picker_controller.viewDidLoad();
+        
+            info_controller.set_text(current_color.hex_string + "  " + current_color.rgb_str());
+            super_view.addSubview(info_controller.view);
+        }
+        else    // toggle off current selected
+        {
+            current_selected_color = -1;
+            colors[sender.tag].layer.borderWidth = 1.0;
+            colors[sender.tag].layer.borderColor = UIColor.blackColor().CGColor;
+            info_controller.view.removeFromSuperview();
+        }
     }
     
     
     func add_colors()
     {
+        colors.removeAll(keepCapacity: true);
+        current_selected_color = -1;
         if(current_index < 0 || (current_index > (palette_data.palettes.count - 1)))
         {
             EXIT_FAILURE;
@@ -192,6 +217,7 @@ class GridController:UIViewController
             scroll.addConstraint(height_constr);
             scroll.addConstraint(top_constr);
             scroll.addConstraint(left_constr);
+            colors.append(color_view);
 
         }
         var content_height:CGFloat = (color_height + (margin)) * CGFloat((ceil(Double(count) / 2.0)) * 2.0) / 2.0 + margin;
@@ -214,5 +240,53 @@ class GridController:UIViewController
     }
     
     //-------------------------------------------------------------------------
-
 }
+
+class ColorInfoController:UIViewController
+{
+    var super_view = UIView();
+    var colorInfoLabel = UILabel();
+    override func viewDidLoad()
+    {
+        super.viewDidLoad()
+        
+        // configure controllers root view
+        var label_height = 1.5 * margin;
+        super_view = self.view;
+        var super_height = super_view.frame.height;
+        var super_width = super_view.frame.width;
+        super_view.frame = CGRect(x: 0, y: super_height - toolbar_height - label_height, width: super_width, height: label_height);
+        
+        // configure label
+        add_subview(colorInfoLabel, super_view, 1.0, 1.0, 1.0);
+        colorInfoLabel.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.8);
+        colorInfoLabel.textColor = UIColor.whiteColor();
+        colorInfoLabel.textAlignment = NSTextAlignment.Center;
+    }
+    
+    func set_text(var in_text:String)
+    {
+        colorInfoLabel.text = in_text;
+    }
+    
+    //-------------------------------------------------------------------------
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated);
+    }
+    
+    //-------------------------------------------------------------------------
+    
+    override func didReceiveMemoryWarning()
+    {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    //-------------------------------------------------------------------------
+}
+
+
+
+

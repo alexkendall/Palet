@@ -35,7 +35,7 @@ class FavoritesController: UIViewController, UITableViewDelegate
         table_view.dataSource = favorites_data;
         table_view.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
-        table_view.backgroundColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.8);
+        table_view.backgroundColor = UIColor.blackColor();
         table_view.layer.borderWidth = 1.0;
         table_view.layer.borderColor = UIColor.blackColor().CGColor;
     }
@@ -45,6 +45,8 @@ class FavoritesController: UIViewController, UITableViewDelegate
         current_color = CustomColor(color: favorites_data.colors[favorites_data.colors.count - indexPath.row - 1]); // LIFO STACK
         tabBarController?.selectedViewController = picker_controller;
         picker_controller.viewDidLoad();
+        picker_controller.notification_controller.set_text("Loaded " + current_color.hex_string + " From Favorites");
+        picker_controller.notification_controller.bring_up();
     }
     
     override func prefersStatusBarHidden() -> Bool
@@ -52,3 +54,4 @@ class FavoritesController: UIViewController, UITableViewDelegate
         return true
     }
 }
+
