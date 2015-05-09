@@ -115,3 +115,17 @@ func print(var cordinates:CGRect)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------
+
+func get_color(var palette_index:Int, var color_index:Int)->CustomColor
+{
+    return CustomColor(color: palette_data.palettes[palette_index].colors[color_index]);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------
+
+func get_palette(var palette_index:Int)->Palette
+{
+    return palette_data.palettes[palette_index];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------

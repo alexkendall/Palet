@@ -40,9 +40,24 @@ class PaletteControler:UIViewController, UITableViewDelegate
     {
         var name = palette_data.palettes[indexPath.row].palette_name;
         current_palette_index = indexPath.row;
-        if(tableView.tag == -5)
+        if(tableView.tag == ADD_PALETTE_TABLE_TAG) // add color to palette
         {
-            palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
+            var row = indexPath.row;
+            
+            var dupl_index = -1;
+            if(find(get_palette(row).colors, current_color) == nil) // color not already in palette
+            {
+                
+                palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
+                
+                //notification_text = "added color " + current_color.hex_string + " to " + name;
+            }
+            else
+            {
+                //notification_text = "Unable to add duplicate color " + current_color.hex_string + " to " + name;
+            }
+            show_notification();
+            
         }
         else
         {
@@ -51,8 +66,14 @@ class PaletteControler:UIViewController, UITableViewDelegate
             color_grid.exit.addTarget(self, action: "remove_grid", forControlEvents: UIControlEvents.TouchUpInside);
             color_grid.title_label.text = name;
             color_grid.add_colors();
-            
         }
+        show_notification();
+    }
+    
+    func show_notification()
+    {
+        println("here");
+        //superview.addSubview(notification.view);
     }
     
     func remove_grid()
@@ -82,7 +103,7 @@ class GridController:UIViewController
         super_view.backgroundColor = UIColor.whiteColor();
         var super_width = super_view.bounds.width;
         var super_height = super_view.bounds.height;
-        var exit_width = margin;
+        var exit_width = margin * 2.0;
         
         // configure title label
         title_label.textColor = UIColor.blackColor();
@@ -102,7 +123,7 @@ class GridController:UIViewController
         add_subview(exit, super_view, margin, super_height - margin - exit_width, super_width - margin - exit_width, margin);
         exit.backgroundColor = UIColor.blackColor();
         exit.setTitle("X", forState: UIControlState.Normal);
-        exit.titleLabel?.font = UIFont.systemFontOfSize(15.0);
+        exit.titleLabel?.font = UIFont.systemFontOfSize(25.0);
     }
     
     func selected_color(sender:UIButton!)
@@ -127,7 +148,6 @@ class GridController:UIViewController
         {
             subs[i].removeFromSuperview();
         }
-        
         scroll.setNeedsLayout();
         scroll.layoutIfNeeded();
         var color_width = (scroll.bounds.width - (margin * 3.0)) / 2.0;
@@ -147,15 +167,6 @@ class GridController:UIViewController
             scroll.addSubview(color_view);
             color_view.addTarget(self, action: "selected_color:", forControlEvents: UIControlEvents.TouchUpInside);
             color_view.tag = i;
-            
-            /*
-            var hex_label = UILabel();
-            hex_label.text = palette_data.palettes[current_index].colors[i].hex_string;
-            hex_label.textColor = UIColor.whiteColor();
-            add_subview(hex_label, color_view, 0.0, color_width - margin, 3.0, 0.0);
-            */
-            
-            
             var distFromLeft:CGFloat = CGFloat();
             if((i % 2) == 0)    // even
             {
@@ -166,7 +177,7 @@ class GridController:UIViewController
             {
                 distFromLeft = (margin * 2.0) + color_width;
             }
-            var distFromTop = margin + ((color_height + (margin * 2.0)) * CGFloat(j));
+            var distFromTop = margin + ((color_height + (margin)) * CGFloat(j));
             
             // add constraints
             var width_constr = NSLayoutConstraint(item: color_view, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: scroll, attribute: NSLayoutAttribute.Width, multiplier: 0.0, constant: color_width);
@@ -183,7 +194,7 @@ class GridController:UIViewController
             scroll.addConstraint(left_constr);
 
         }
-        var content_height:CGFloat = (color_height + (margin * 2.0)) * CGFloat((ceil(Double(count) / 2.0)) * 2.0) / 2.0;
+        var content_height:CGFloat = (color_height + (margin)) * CGFloat((ceil(Double(count) / 2.0)) * 2.0) / 2.0 + margin;
         scroll.contentSize = CGSize(width: scroll.bounds.width, height: content_height);
     }
     
@@ -205,5 +216,3 @@ class GridController:UIViewController
     //-------------------------------------------------------------------------
 
 }
-
-

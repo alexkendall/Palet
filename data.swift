@@ -92,7 +92,7 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
 }
 
 class PalettesData:NSObject, UITableViewDataSource
-{
+{    
     var NEXT_PALETTE_ID:UInt64 = 0;
     var palettes = Array<Palette>();
     
@@ -109,10 +109,12 @@ class PalettesData:NSObject, UITableViewDataSource
         cell.textLabel?.text = palette_data.palettes[indexPath.row].palette_name;
         cell.backgroundColor = UIColor.grayColor();
         cell.textLabel?.textColor = UIColor.whiteColor();
+        cell.selectionStyle = UITableViewCellSelectionStyle.None;
         return cell;
     }
     
 }
+
 
 var favorites_data:FavoritesData = FavoritesData();
 var palette_data:PalettesData = PalettesData();

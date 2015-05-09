@@ -2,6 +2,8 @@
 import UIKit
 var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
 var color_height = 5.0 * margin;
+var ADD_PALETTE_TABLE_TAG = -5;
+var BUTTON_DIM = margin * 1.5;
 
 class ColorController: UIViewController
 {
@@ -23,6 +25,7 @@ class ColorController: UIViewController
     var shades = Array<UIButton>();
     var pallete_window = PaletteWindowController();
     var pallete_switch = true;
+    var notification_controller = NotificationController();
     
     
     override func prefersStatusBarHidden() -> Bool
@@ -55,13 +58,17 @@ class ColorController: UIViewController
         {
             favorites_data.colors.append(CustomColor(color: current_color));
             favorites_controller.table_view.reloadData();
+            notification_controller.set_text("Added " + current_color.hex_string + " to Favorites");
         }
         else    // if duplicate -> push selected duplicate to top of stack
         {
             var index = find(favorites_data.colors, temp);
-            favorites_data.colors.removeAtIndex(index!);
-            add_favorite();
+            favorites_data.colors.removeAtIndex(index!);    // remove and push copy to top of stack (LIFO)
+            favorites_data.colors.append(CustomColor(color: current_color));
+            favorites_controller.table_view.reloadData();
+            notification_controller.set_text("Color " + current_color.hex_string + " Already in Favorites");
         }
+        notification_controller.bring_up();
     }
     
     func selected_shade(sender:UIButton!)
@@ -100,6 +107,7 @@ class ColorController: UIViewController
             shades[i].tag = i; // tag shade so we know which color to update to when shade is selected
         }
     }
+    
     func save_color(sender:UIButton!)
     {
         if(find(saved_colors, current_color) == nil)
@@ -140,6 +148,7 @@ class ColorController: UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE SAVE BUTTON IN COLOR VIEW
         //-------------------------------------------------------------------------------------------
+        var fav_dim = margin * 1.5;
         favorite_button.setTranslatesAutoresizingMaskIntoConstraints(false);
         favorite_button.backgroundColor = UIColor.lightGrayColor();
         favorite_button.setBackgroundImage(UIImage(named: "favorite"), forState: UIControlState.Normal);
@@ -147,8 +156,8 @@ class ColorController: UIViewController
         color_view.addSubview(favorite_button);
         var save_right = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0.0);
         var save_bottom = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0.0);
-        var save_height = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -margin * 1.25);
-        var save_width = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: margin * 1.25);
+        var save_height = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -fav_dim);
+        var save_width = NSLayoutConstraint(item: favorite_button, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: favorite_button, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: fav_dim);
         // add constraints
         color_view.addConstraint(save_right);
         color_view.addConstraint(save_bottom);
@@ -280,7 +289,16 @@ class ColorController: UIViewController
         // add target for adding color to palette
         add_button.addTarget(self, action: "add_to_pallette", forControlEvents: UIControlEvents.TouchUpInside);
         
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE CHILD VIEW CONTROLLERS
+        //-------------------------------------------------------------------------------------------
         self.addChildViewController(pallete_window);
+        self.addChildViewController(notification_controller);
+        
+        //-------------------------------------------------------------------------------------------
+        // ADD NOTIFICATION VIEW
+        //-------------------------------------------------------------------------------------------
+        super_view.addSubview(notification_controller.view);
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {
@@ -362,13 +380,13 @@ class PaletteWindowController:UIViewController
         //-------------------------------------------------------------------------------------------
         palette_table.dataSource = palette_data;
         palette_table.delegate = pallettes_controller;
-        add_subview(palette_table, super_view, picker_height, 0.0, 0.0, 0.0);
+        add_subview(palette_table, super_view, picker_height - 1.0, 0.0, 0.0, 0.0);
         palette_table.backgroundColor = UIColor.lightGrayColor();
         palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
         palette_table.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
         
         // tag table so we can use different color cells fromt those in PaletteController
-        palette_table.tag = -5;
+        palette_table.tag = ADD_PALETTE_TABLE_TAG;
     }
     
     override func viewDidAppear(animated: Bool)
@@ -384,7 +402,123 @@ class PaletteWindowController:UIViewController
     
 }
 
+class NotificationController: UIViewController
+{
+    var notification_text:String = String();
+    var notification_label = UILabel();
+    var super_view = UIView();
+    var visible = false;
+    var alpha_val:CGFloat = 0.0;
+    var ascending:Bool = true;
+    var peaking:Bool = false;
+    var peak_count:Int = 0;
+    var timer = NSTimer();
+    
+    override func viewDidLoad()
+    {
+        picker_controller.color_view.layoutIfNeeded();
+        picker_controller.color_view.setNeedsLayout();
+        picker_controller.favorite_button.layoutIfNeeded();
+        picker_controller.favorite_button.setNeedsLayout();
+        var color_height = picker_controller.color_view.bounds.height;
+        var color_width = picker_controller.color_view.bounds.width;
+        var fav_height = picker_controller.favorite_button.bounds.height;
+        var fav_width = picker_controller.favorite_button.bounds.width;
+        var width:CGFloat = color_width - (fav_width * 2.0);
+        var height:CGFloat = fav_height;
+        
+        super_view = self.view;
+        super_view.frame = CGRect(x: margin + BUTTON_DIM, y: margin + (color_height - BUTTON_DIM), width: width, height: height);
+        super_view.bounds = CGRect(x: 0.0, y: 0.0, width: width+2.0, height: height);
+        
+        add_subview(notification_label, super_view, 1.0, 1.0, 1.0);
+        notification_label.text = notification_text;
+        notification_label.textAlignment = NSTextAlignment.Center;
+        notification_label.textColor = UIColor.blackColor();
+        notification_label.font = UIFont.systemFontOfSize(12.0);
+        notification_label.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.5);
+        notification_label.layer.borderWidth = 0.5;
+        notification_label.alpha = 0.0;
+        super_view.addSubview(notification_label);
+        super.viewDidLoad()
+    }
+    
+    func set_text(var in_text:String)
+    {
+        notification_label.text = in_text;
+    }
+    
+    func bring_up()
+    {
+        if(!visible)
+        {
+            visible = true;
+        }
+        else
+        {
+            // invalidate current timer and reset values
+            timer.invalidate();
+            alpha_val = 0.0;
+            ascending = true;
+            peaking = false;
+            peak_count = 0;
+        }
+        timer = NSTimer.scheduledTimerWithTimeInterval(0.025, target: self, selector: "animate", userInfo: nil, repeats: true);
+    }
+    
+    func animate()
+    {
+        if(ascending)
+        {
+            alpha_val += 0.5;
+            if(alpha_val > 1.0)
+            {
+                ascending = false;
+                peaking = true;
+                alpha_val = 1.0;
+            }
+        }
+        else if(peaking)
+        {
+            ++peak_count;
+            if(peak_count == 20)
+            {
+                peaking = false;
+                peak_count = 0; // reset
+            }
+        }
+        else    // descending
+        {
+            alpha_val -= 0.02;
+            if(alpha_val < 0)
+            {
+                alpha_val = 0.0;
+                ascending = true;
+                peaking = false;
+                timer.invalidate();
+                visible = false;
+            }
+        }
+        
+        notification_label.alpha = alpha_val;
+        
+    }
+    
+    //-------------------------------------------------------------------------
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated);
+    }
+    
+    //-------------------------------------------------------------------------
+    
+    override func didReceiveMemoryWarning()
+    {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    //-------------------------------------------------------------------------
 
-
-
-
+}
