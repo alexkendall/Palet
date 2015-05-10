@@ -17,7 +17,7 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
     {
         var cell:FavoriteTableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! FavoriteTableViewCell;
         var custom_color = colors[favorites_data.colors.count - 1 - indexPath.row];  // STACK (LIFO)
-        cell.set_info(custom_color.hex_string, rgb_string: custom_color.rgb_str(), custom_color: custom_color, row: indexPath.row);
+        cell.set_info(custom_color.hex_string, rgb_string: custom_color.rgb_str(), custom_color: custom_color, in_row: indexPath.row);
         return cell;
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int

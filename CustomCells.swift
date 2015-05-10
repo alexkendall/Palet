@@ -80,8 +80,8 @@ class FavoriteTableViewCell:UITableViewCell
 {
     var originalCenter = CGPoint();
     var deleteOnDragRelease = false;
-    var rgb_label = UILabel();
-    var hex_label = UILabel();
+    var rgb_label = UIButton();
+    var hex_display = UIButton();
     var color_view = UIView();
     var delete_button = UIButton();
     var row:Int = Int();
@@ -98,8 +98,8 @@ class FavoriteTableViewCell:UITableViewCell
         if(recognizer.state == UIGestureRecognizerState.Changed)
         {
             let translation = recognizer.translationInView(self);
+        
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y);
-            
             if(frame.origin.x < -frame.size.width / 2.0)
             {
                 add_delete();
@@ -113,8 +113,23 @@ class FavoriteTableViewCell:UITableViewCell
         if(recognizer.state == UIGestureRecognizerState.Ended)
         {
             let originalFrame = CGRect(x: 0, y: frame.origin.y, width: bounds.size.width, height: bounds.size.height);
-            UIView.animateWithDuration(0.025, animations: {self.frame = originalFrame})
+            UIView.animateWithDuration(0.20, animations: {self.frame = originalFrame})
         }
+    }
+    
+    // override this in order to enable vertical scrolling of view table
+    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool
+    {
+        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer
+        {
+            let translation = panGestureRecognizer.translationInView(superview!)
+            if fabs(translation.x) > fabs(translation.y)
+            {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
     
     //------------------------------------------------------------------------------------------------
@@ -122,11 +137,12 @@ class FavoriteTableViewCell:UITableViewCell
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier);
-        
+    
         // add pan recognizer
         var recognizer = UIPanGestureRecognizer(target: self, action: "pan_recognizer:");
         recognizer.delegate = self;
         addGestureRecognizer(recognizer);
+        
     }
     
     //------------------------------------------------------------------------------------------------
@@ -153,8 +169,9 @@ class FavoriteTableViewCell:UITableViewCell
     
     //------------------------------------------------------------------------------------------------
     
-    func set_info(var hex_string:String, var rgb_string:String, var custom_color:CustomColor, var row:Int)
+    func set_info(var hex_string:String, var rgb_string:String, var custom_color:CustomColor, var in_row:Int)
     {
+        self.row = in_row;
         var subs = self.subviews;
         for(var i = 0; i < subs.count; ++i)
         {
@@ -198,33 +215,46 @@ class FavoriteTableViewCell:UITableViewCell
         
         // configure hex font to display
         var hex_string:String = custom_color.hex_string;
-        hex_label.setTranslatesAutoresizingMaskIntoConstraints(false);
-        hex_label.text = hex_string;
-        hex_label.font = UIFont.systemFontOfSize(14.0);
-        self.addSubview(hex_label);
+        hex_display.setTranslatesAutoresizingMaskIntoConstraints(false);
+        hex_display.setTitle(hex_string, forState: UIControlState.Normal);
+        hex_display.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+        hex_display.titleLabel?.font = UIFont.systemFontOfSize(14.0);
+        
         var centerx_const = cell_margin;
-        var center_hex = NSLayoutConstraint(item: hex_label, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: cell_margin * 2.0);
-        var center_y = NSLayoutConstraint(item: hex_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
-        self.addConstraint(center_hex);
+        var left_hex = NSLayoutConstraint(item: hex_display, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: cell_margin * 2.0);
+        var center_y = NSLayoutConstraint(item: hex_display, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
+        var height_hex = NSLayoutConstraint(item: hex_display, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: 0.0);
+        var width_hex = NSLayoutConstraint(item: hex_display, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Width, multiplier: 0.2, constant: 0.0);
+        
+        self.addSubview(hex_display);
+        self.addConstraint(left_hex);
         self.addConstraint(center_y);
+        self.addConstraint(height_hex);
+        self.addConstraint(width_hex);
         
         // configure rgb font to display
         var rgb_string:String = custom_color.rgb_str();
-        self.addSubview(rgb_label);
         rgb_label.setTranslatesAutoresizingMaskIntoConstraints(false);
-        rgb_label.text = rgb_string;
-        rgb_label.font = UIFont.systemFontOfSize(14.0);
-        self.addSubview(hex_label);
-        var center_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant: -30.0);
-        var center_yrgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
-        self.addConstraint(center_rgb);
-        self.addConstraint(center_yrgb);
-        self.selectionStyle = UITableViewCellSelectionStyle.None;
+        rgb_label.setTitle(rgb_string, forState: UIControlState.Normal);
+        rgb_label.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+        rgb_label.titleLabel?.font = UIFont.systemFontOfSize(14.0);
         
+        var left_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: hex_display, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -10.0);
+        var center_yrgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
+        var height_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: 0.0);
+        var width_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Width, multiplier: 0.5, constant: 0.0);
+        
+        self.addSubview(rgb_label);
+        self.addConstraint(left_rgb);
+        self.addConstraint(center_yrgb);
+        self.addConstraint(height_rgb);
+        self.addConstraint(width_rgb);
+        self.selectionStyle = UITableViewCellSelectionStyle.None;
     }
     
     func add_delete()
     {
+        //println(self.row);
         var but_width = self.frame.size.height; // button width == button height == cell height
         var left_margin = self.frame.size.width - but_width;
         delete_button.backgroundColor = UIColor.redColor();
@@ -246,8 +276,6 @@ class FavoriteTableViewCell:UITableViewCell
         var index = favorites_data.colors.count - self.row - 1;
         favorites_data.colors.removeAtIndex(index);
         favorites_controller.table_view.reloadData();
-        
-        println("favorite color count is now " + String(favorites_data.colors.count));
     }
 }
 
