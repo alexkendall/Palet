@@ -26,7 +26,7 @@ class PaletteControler:UIViewController, UITableViewDelegate
         // configure table view
         table_view.delegate = self;
         table_view.dataSource = palette_data;
-        table_view.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
+        table_view.registerClass(myTableViewCell.self, forCellReuseIdentifier: "cell");
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
         table_view.backgroundColor = UIColor.lightGrayColor();
         table_view.layer.borderWidth = 1.0;
@@ -118,7 +118,7 @@ class GridController:UIViewController
         
         // configure exit button
         add_subview(exit, super_view, margin, super_height - margin - exit_width - 1.0, super_width - margin - exit_width, margin);
-        exit.backgroundColor = UIColor.lightGrayColor();
+        exit.backgroundColor = UIColor.blackColor();
         exit.setTitle("X", forState: UIControlState.Normal);
         exit.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
         exit.titleLabel?.font = UIFont.systemFontOfSize(50.0);

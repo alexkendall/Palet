@@ -228,7 +228,6 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
         var shade_color = (color * (1.0-t)) + (black * t);
         shades[i].backgroundColor = shade_color.get_UIColor();
     }
-    
 }
 
 //-------------------------------------------------------------------------

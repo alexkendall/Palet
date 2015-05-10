@@ -364,7 +364,6 @@ class PaletteWindowController:UIViewController
         var x = margin;
         var y = margin + color_height - 1.0;
         super_view.frame = CGRect(x: x, y: y, width: frame_width, height: frame_height);
-        super_view.backgroundColor = UIColor.lightGrayColor();
         super_view.layer.borderWidth = 1.0;
         
         //-------------------------------------------------------------------------------------------
@@ -383,7 +382,7 @@ class PaletteWindowController:UIViewController
         add_subview(palette_table, super_view, picker_height - 1.0, 0.0, 0.0, 0.0);
         palette_table.backgroundColor = UIColor.lightGrayColor();
         palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
-        palette_table.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell");
+        palette_table.registerClass(myTableViewCell.self, forCellReuseIdentifier: "cell");
         
         // tag table so we can use different color cells fromt those in PaletteController
         palette_table.tag = ADD_PALETTE_TABLE_TAG;
