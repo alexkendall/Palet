@@ -163,6 +163,7 @@ class GridController:UIViewController
         assert(current_index > -1, "Current index is not positive");
         palette_data.palettes[current_index].colors.removeAtIndex(delete_button.tag);
         add_colors();   //reload colors
+        info_controller.view.removeFromSuperview();
     }
     
     func add_colors()

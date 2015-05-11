@@ -35,7 +35,7 @@ class FavoritesController: UIViewController, UITableViewDelegate
         table_view.dataSource = favorites_data;
         table_view.registerClass(FavoriteTableViewCell.self, forCellReuseIdentifier: "cell");
         table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
-        table_view.backgroundColor = UIColor.blackColor();
+        table_view.backgroundColor = UIColor.lightGrayColor();
         table_view.layer.borderWidth = 1.0;
         table_view.layer.borderColor = UIColor.blackColor().CGColor;
     }
@@ -47,8 +47,6 @@ class FavoritesController: UIViewController, UITableViewDelegate
         picker_controller.viewDidLoad();
         picker_controller.notification_controller.set_text("Loaded " + current_color.hex_string + " From Favorites");
         picker_controller.notification_controller.bring_up();
-        
-        println("selected row at index " + String(indexPath.row));
     }
     
     override func prefersStatusBarHidden() -> Bool

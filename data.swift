@@ -54,32 +54,3 @@ class PalettesData:NSObject, UITableViewDataSource
 
 var favorites_data:FavoritesData = FavoritesData();
 var palette_data:PalettesData = PalettesData();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
