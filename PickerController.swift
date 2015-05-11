@@ -326,29 +326,8 @@ class PaletteWindowController:UIViewController
             palette_data.palettes.append(new_palette);
             enter_text.text = "";   // reset text
             palette_table.reloadData();
-            pallettes_controller.table_view.reloadData();
+            pallettes_controller.add_controler.palette_table.reloadData();
         }
-    }
-    
-    func enter_name()
-    {
-        super_view.setNeedsLayout();
-        super_view.layoutIfNeeded();
-        var frame_height = super_view.frame.height;
-        var frame_width = super_view.frame.width;
-        var text_height = margin * 2.0;
-        enter_text.backgroundColor = UIColor.whiteColor();
-        enter_text.placeholder = "Create New Palette";
-        add_subview(enter_text, super_view, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
-        enter_text.setNeedsLayout();
-        enter_text.layoutIfNeeded();
-        var commit_width = text_height;
-        commit_button.backgroundColor = UIColor.grayColor();
-        commit_button.setTitle("ADD", forState: UIControlState.Normal);
-        commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
-        commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
-        add_subview(commit_button, super_view, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
-        commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
     }
 
     override func viewDidLoad()
@@ -373,7 +352,24 @@ class PaletteWindowController:UIViewController
         text_background.backgroundColor = UIColor.whiteColor();
         text_background.layer.borderWidth = 1.0;
         add_subview(text_background, super_view, 0.0, frame_height - picker_height, 0.0, 0.0);
-        enter_name();
+        
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE CREATE PALETTE ENTER TEXT AND COMMIT VIEWS
+        //-------------------------------------------------------------------------------------------
+        var text_height:CGFloat = 44.0;
+        enter_text.backgroundColor = UIColor.whiteColor();
+        enter_text.placeholder = "Create New Palette";
+        add_subview(enter_text, super_view, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
+        enter_text.setNeedsLayout();
+        enter_text.layoutIfNeeded();
+        var commit_width = text_height;
+        commit_button.backgroundColor = UIColor.grayColor();
+        commit_button.setTitle("ADD", forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
+        add_subview(commit_button, super_view, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
+        commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
+        
         //-------------------------------------------------------------------------------------------
         // CONFIGURE ADD TABLE VIEW
         //-------------------------------------------------------------------------------------------

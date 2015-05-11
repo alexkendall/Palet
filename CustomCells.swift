@@ -25,7 +25,7 @@ class myTableViewCell:UITableViewCell
         // remove this palette from data soruce
         var index:Int = row; //palette_data.palettes.count - row - 1;
         palette_data.palettes.removeAtIndex(index);
-        pallettes_controller.table_view.reloadData();
+        pallettes_controller.add_controler.palette_table.reloadData();
         picker_controller.pallete_window.palette_table.reloadData();
     }
     

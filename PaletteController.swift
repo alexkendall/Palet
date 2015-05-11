@@ -5,11 +5,12 @@ import UIKit
 
 class PaletteControler:UIViewController, UITableViewDelegate
 {
-    
-    var table_view = UITableView();
+
+    //var table_view = UITableView();
     var background = UIView();
     var superview = UIView();
     var color_grid = GridController();
+    var add_controler = AddController();
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -21,18 +22,8 @@ class PaletteControler:UIViewController, UITableViewDelegate
         super.viewDidLoad()
         superview = self.view;
         superview.backgroundColor = UIColor.whiteColor();
-        add_subview(table_view, superview, margin, margin + toolbar_height, margin, margin);
-        
-        // configure table view
-        table_view.delegate = self;
-        table_view.dataSource = palette_data;
-        table_view.registerClass(myTableViewCell.self, forCellReuseIdentifier: "cell");
-        table_view.separatorStyle = UITableViewCellSeparatorStyle.None;
-        table_view.backgroundColor = UIColor.lightGrayColor();
-        table_view.layer.borderWidth = 1.0;
-        table_view.layer.borderColor = UIColor.blackColor().CGColor;
-        
-        self.addChildViewController(color_grid);
+        self.addChildViewController(add_controler);
+        superview.addSubview(add_controler.view);
         
     }
     
@@ -316,5 +307,126 @@ class ColorInfoController:UIViewController
 }
 
 
+class AddController:UIViewController
+{
+    var super_view = UIView();
+    var text_background = UIView();
+    var enter_text = UITextField();
+    var commit_button = UIButton();
+    var palette_table = UITableView();
+    var background = UIView();
+    
+    func add_new_palette()
+    {
+        if(enter_text.text != "")   // don't allow user to name palette the empty string
+        {
+            enter_text.endEditing(true);  // remove keybaord
+            var name = enter_text.text;
+            var new_palette = Palette(name: enter_text.text);
+            palette_data.palettes.append(new_palette);
+            enter_text.text = "";   // reset text
+            palette_table.reloadData();
+            pallettes_controller.add_controler.palette_table.reloadData();
+            picker_controller.pallete_window.palette_table.reloadData();
+        }
+    }
+    
+    func enter_name()
+    {
+        super_view.setNeedsLayout();
+        super_view.layoutIfNeeded();
+        
+        var frame_height = background.frame.height;
+        var frame_width = background.frame.width;
+        var text_height = margin * 2.0;
+        
+        enter_text.backgroundColor = UIColor.whiteColor();
+        enter_text.placeholder = "Create New Palette";
+        add_subview(enter_text, background, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
+        enter_text.setNeedsLayout();
+        enter_text.layoutIfNeeded();
+        var commit_width = text_height;
+        commit_button.backgroundColor = UIColor.grayColor();
+        commit_button.setTitle("ADD", forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
+        add_subview(commit_button, background, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
+        commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
+    }
+    
+    override func viewDidLoad()
+    {
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE SUPER VIEW BOUNDS AND FRAMES
+        //-------------------------------------------------------------------------------------------
+        super.viewDidLoad();
+        super_view = self.view;
+        
 
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE BACKGROUND
+        //-------------------------------------------------------------------------------------------
+        add_subview(background, super_view, margin, margin + toolbar_height, margin, margin);
+        background.backgroundColor = UIColor.lightGrayColor();
+        background.layer.borderWidth = 1.0;
+        background.layoutIfNeeded();
+        background.setNeedsLayout();
+        
 
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE ADD PICKER TEXT VIEW
+        //-------------------------------------------------------------------------------------------
+        var picker_height:CGFloat = 44.0;
+        text_background.backgroundColor = UIColor.whiteColor();
+        text_background.layer.borderWidth = 1.0;
+        var bottom_margin = background.frame.height - picker_height;
+        add_subview(text_background, background, 0.0, bottom_margin, 0.0, 0.0);
+        
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE FIELD TO ENTER TEXT
+        //-------------------------------------------------------------------------------------------
+        
+        var frame_height = background.frame.height;
+        var frame_width = background.frame.width;
+        var text_height:CGFloat = 44.0;
+        
+        enter_text.backgroundColor = UIColor.whiteColor();
+        enter_text.placeholder = "Create New Palette";
+        add_subview(enter_text, background, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
+        enter_text.setNeedsLayout();
+        enter_text.layoutIfNeeded();
+        var commit_width = text_height;
+        commit_button.backgroundColor = UIColor.grayColor();
+        commit_button.setTitle("ADD", forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+        commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
+        add_subview(commit_button, background, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
+        commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
+        
+
+        //-------------------------------------------------------------------------------------------
+        // CONFIGURE ADD TABLE VIEW
+        //-------------------------------------------------------------------------------------------
+        palette_table.dataSource = palette_data;
+        palette_table.delegate = pallettes_controller;
+        add_subview(palette_table, background, picker_height - 1.0, 0.0, 0.0, 0.0);
+        palette_table.backgroundColor = UIColor.lightGrayColor();
+        palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
+        palette_table.registerClass(myTableViewCell.self, forCellReuseIdentifier: "cell");
+        
+        // tag table so we can use different color cells fromt those in PaletteController
+        palette_table.tag = 0;
+    }
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated);
+    }
+    
+    override func didReceiveMemoryWarning()
+    {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+}
