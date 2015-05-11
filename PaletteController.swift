@@ -87,7 +87,7 @@ class GridController:UIViewController
     var title_label = UILabel();
     var exit = UIButton();
     var scroll = UIScrollView();
-    var title_margin = margin * 3.0;
+    var title_margin:CGFloat = 44.0;
     var current_index:Int = -1;
     var current_selected_color:Int = -1;
     var colors = Array<UIButton>();
@@ -100,29 +100,29 @@ class GridController:UIViewController
         super_view.backgroundColor = UIColor.whiteColor();
         var super_width = super_view.bounds.width;
         var super_height = super_view.bounds.height;
-        var exit_width = margin * 2.0;
+        var exit_width = title_margin;
         
         // configure title label
         title_label.textColor = UIColor.blackColor();
+        title_label.font = UIFont.systemFontOfSize(20.0);
         title_label.textAlignment = NSTextAlignment.Center;
         title_label.backgroundColor = UIColor.whiteColor();
         title_label.layer.borderWidth = 1.0;
         add_subview(title_label, super_view, margin, super_view.bounds.height - title_margin - margin, margin, margin);
         
         // configure scroll view
-        add_subview(scroll, super_view, title_margin, margin + toolbar_height, margin, margin);
+        add_subview(scroll, super_view, margin + title_margin - 1, margin + toolbar_height, margin, margin);
         scroll.backgroundColor = UIColor.lightGrayColor();
         scroll.layer.borderWidth = 1.0;
         scroll.scrollEnabled = true;
         scroll.clipsToBounds = true;
         
         // configure exit button
-        add_subview(exit, super_view, margin, super_height - margin - exit_width - 1.0, super_width - margin - exit_width, margin);
+        add_subview(exit, super_view, margin, super_height - margin - exit_width, super_width - margin - exit_width, margin);
         exit.backgroundColor = UIColor.blackColor();
-        exit.setTitle("X", forState: UIControlState.Normal);
+        exit.setTitle("exit", forState: UIControlState.Normal);
         exit.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
-        exit.titleLabel?.font = UIFont.systemFontOfSize(50.0);
-        exit.layer.borderWidth = 1.0;
+        exit.titleLabel?.font = UIFont.systemFontOfSize(15.0);
         
         // add child controller
         self.addChildViewController(info_controller);
@@ -158,6 +158,12 @@ class GridController:UIViewController
         }
     }
     
+    func delete_color(delete_button:UIButton!)
+    {
+        assert(current_index > -1, "Current index is not positive");
+        palette_data.palettes[current_index].colors.removeAtIndex(delete_button.tag);
+        add_colors();   //reload colors
+    }
     
     func add_colors()
     {
@@ -218,6 +224,22 @@ class GridController:UIViewController
             scroll.addConstraint(top_constr);
             scroll.addConstraint(left_constr);
             colors.append(color_view);
+            
+            // set up delete button for each color
+            var delColBut = UIButton();
+            delColBut.backgroundColor = UIColor.blackColor();
+            delColBut.setTitle("x", forState: UIControlState.Normal);
+            //delColBut.titleLabel?.font = UIFont.systemFontOfSize(14.0);
+            delColBut.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
+            delColBut.tag = i;
+            color_view.layoutIfNeeded();
+            color_view.setNeedsLayout();
+            var color_dim = color_view.bounds.width;
+            var del_dim:CGFloat = 30.0;
+            var del_margin = color_dim - del_dim;
+            add_subview(delColBut, color_view, 0.0, del_margin, del_margin, 0.0);
+            delColBut.addTarget(self, action: "delete_color:", forControlEvents: UIControlEvents.TouchDown);
+
 
         }
         var content_height:CGFloat = (color_height + (margin)) * CGFloat((ceil(Double(count) / 2.0)) * 2.0) / 2.0 + margin;

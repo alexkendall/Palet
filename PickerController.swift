@@ -369,7 +369,7 @@ class PaletteWindowController:UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE ADD PICKER TEXT VIEW
         //-------------------------------------------------------------------------------------------
-        var picker_height = margin * 2.0;
+        var picker_height:CGFloat = 44.0;
         text_background.backgroundColor = UIColor.whiteColor();
         text_background.layer.borderWidth = 1.0;
         add_subview(text_background, super_view, 0.0, frame_height - picker_height, 0.0, 0.0);

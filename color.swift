@@ -118,14 +118,6 @@ class CustomColor:Equatable
     func print()
     {
         println(hex_string);
-        /*
-       var discrete_str = String(format: "RGB Discrete: R:% i, G:%i, B:%i\n",rgb_discrete[0], rgb_discrete[1], rgb_discrete[2]);
-       
-        var contin_str = String(format: "RGB Continuous: R:%.2f, G:%.2f, B:%.2f\n",rgb_continuous[0], rgb_continuous[1], rgb_continuous[2]);
-        
-        println(discrete_str);
-        println(contin_str);
-        */
     }
     //-------------------------------------------------------------------------
     // data

@@ -9,11 +9,47 @@
 import Foundation
 import UIKit
 
+ //------------------------------------------------------------------------------------------------
+ // BEGIN MY TABLE VIEW CELL
+ //------------------------------------------------------------------------------------------------
+
 class myTableViewCell:UITableViewCell
 {
     var originalCenter = CGPoint();
     var deleteOnDragRelease = false;
     var delete_button = UIButton();
+    var row:Int = Int();
+    
+    func delete_cell()
+    {
+        // remove this palette from data soruce
+        var index:Int = row; //palette_data.palettes.count - row - 1;
+        palette_data.palettes.removeAtIndex(index);
+        pallettes_controller.table_view.reloadData();
+        picker_controller.pallete_window.palette_table.reloadData();
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    
+    func add_delete()
+    {
+        //println(self.row);
+        var but_width = self.frame.size.height; // button width == button height == cell height
+        var left_margin = self.frame.size.width - but_width;
+        delete_button.backgroundColor = UIColor.redColor();
+        delete_button.setTitle("DEL", forState: UIControlState.Normal);
+        delete_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
+        delete_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Highlighted);
+        add_subview(delete_button, self, 0.0, 0.0, left_margin, 0.0);
+        delete_button.addTarget(self, action: "delete_cell", forControlEvents: UIControlEvents.TouchUpInside);
+    }
+    
+    //------------------------------------------------------------------------------------------------
+    
+    func remove_delete()
+    {
+        delete_button.removeFromSuperview();
+    }
     
     //------------------------------------------------------------------------------------------------
     
@@ -27,14 +63,40 @@ class myTableViewCell:UITableViewCell
         if(recognizer.state == UIGestureRecognizerState.Changed)
         {
             let translation = recognizer.translationInView(self);
+            
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y);
+            if(frame.origin.x < -frame.size.width / 2.0)
+            {
+                add_delete();
+            }
+            if(frame.origin.x > 50.0)
+            {
+                remove_delete();
+            }
         }
         
         if(recognizer.state == UIGestureRecognizerState.Ended)
         {
             let originalFrame = CGRect(x: 0, y: frame.origin.y, width: bounds.size.width, height: bounds.size.height);
-            UIView.animateWithDuration(0.025, animations: {self.frame = originalFrame})
+            UIView.animateWithDuration(0.2, animations: {self.frame = originalFrame})
         }
+    }
+    
+      //------------------------------------------------------------------------------------------------
+    
+    // override this in order to enable vertical scrolling of view table
+    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool
+    {
+        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer
+        {
+            let translation = panGestureRecognizer.translationInView(superview!)
+            if fabs(translation.x) > fabs(translation.y)
+            {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
     
     //------------------------------------------------------------------------------------------------
@@ -42,7 +104,7 @@ class myTableViewCell:UITableViewCell
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier);
-        
+ 
         // add pan recognizer
         var recognizer = UIPanGestureRecognizer(target: self, action: "pan_recognizer:");
         recognizer.delegate = self;
@@ -75,7 +137,14 @@ class myTableViewCell:UITableViewCell
     
 }
 
+//------------------------------------------------------------------------------------------------
+// END MY TABLE VIEW CELL
+//------------------------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------------------------
+// BEGIN FAVORITE TABLE VIEW CELL
+//------------------------------------------------------------------------------------------------
 class FavoriteTableViewCell:UITableViewCell
 {
     var originalCenter = CGPoint();
@@ -279,4 +348,6 @@ class FavoriteTableViewCell:UITableViewCell
     }
 }
 
-
+//------------------------------------------------------------------------------------------------
+// END FAVORITE TABLE VIEW CELL
+//------------------------------------------------------------------------------------------------

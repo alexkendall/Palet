@@ -45,11 +45,12 @@ class PalettesData:NSObject, UITableViewDataSource
         cell.backgroundColor = UIColor.grayColor();
         cell.textLabel?.textColor = UIColor.whiteColor();
         cell.selectionStyle = UITableViewCellSelectionStyle.None;
+        cell.row = indexPath.row;
+        cell.remove_delete();
         return cell;
     }
     
 }
-
 
 var favorites_data:FavoritesData = FavoritesData();
 var palette_data:PalettesData = PalettesData();
