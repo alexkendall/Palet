@@ -14,13 +14,12 @@ let picker_controller = ColorController();
 let favorites_controller = FavoritesController();
 let pallettes_controller = PaletteControler();
 let controllers = [favorites_controller,picker_controller, pallettes_controller];
-
+let NUM_SHADES = 9;
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -34,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: third_image, tag: 3);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         tab_controller.selectedViewController = picker_controller;
+        
         return true
     }
 

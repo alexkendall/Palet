@@ -205,18 +205,21 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
     }
 
     // first half shades are linear combo of white and color
-
     var half_index = shades.count / 2;
+    var increment = 1.0 / Float(half_index);
+    var t:Float = 0.0;
     for(var i = 0; i < half_index; ++i)
     {
-        var t:Float = Float(i) / Float(half_index);
         var shade_color = (white * (1.0 - t)) + (color * t);
         shades[i].backgroundColor = shade_color.get_UIColor();
+        t = t + increment;
     }
     shades[half_index].backgroundColor = color.get_UIColor();
+    
+    t = 0.0;
     for(var i = half_index+1; i < shades.count; ++i)
     {
-        var t:Float = (Float(i) - Float(half_index)) / Float(half_index);
+        t += increment;
         var shade_color = (color * (1.0-t)) + (black * t);
         shades[i].backgroundColor = shade_color.get_UIColor();
     }

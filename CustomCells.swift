@@ -288,6 +288,9 @@ class FavoriteTableViewCell:UITableViewCell
         hex_display.setTitle(hex_string, forState: UIControlState.Normal);
         hex_display.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
         hex_display.titleLabel?.font = UIFont.systemFontOfSize(14.0);
+        hex_display.tag = row;
+        hex_display.addTarget(self, action: "load_color:", forControlEvents: UIControlEvents.TouchUpInside);
+        
         
         var centerx_const = cell_margin;
         var left_hex = NSLayoutConstraint(item: hex_display, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: cell_margin * 2.0);
@@ -307,6 +310,9 @@ class FavoriteTableViewCell:UITableViewCell
         rgb_label.setTitle(rgb_string, forState: UIControlState.Normal);
         rgb_label.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
         rgb_label.titleLabel?.font = UIFont.systemFontOfSize(14.0);
+        rgb_label.tag = row;
+        rgb_label.addTarget(self, action: "load_color:", forControlEvents: UIControlEvents.TouchUpInside);
+        
         
         var left_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: hex_display, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -10.0);
         var center_yrgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
@@ -319,6 +325,14 @@ class FavoriteTableViewCell:UITableViewCell
         self.addConstraint(height_rgb);
         self.addConstraint(width_rgb);
         self.selectionStyle = UITableViewCellSelectionStyle.None;
+    }
+    
+    func load_color(sender:UIButton!)
+    {
+        var color_index = favorites_data.colors.count - 1 - sender.tag; // LIFO STACK
+        current_color = CustomColor(color: favorites_data.colors[color_index]);
+        picker_controller.viewDidLoad();
+        tab_controller.selectedViewController = picker_controller;
     }
     
     func add_delete()
