@@ -329,6 +329,15 @@ class PaletteWindowController:UIViewController
             pallettes_controller.add_controler.palette_table.reloadData();
         }
     }
+    
+    func started_editing()
+    {
+        // allow user to cancel entry/ make keybaord disappear
+        if(enter_text.editing && enter_text.text == "")
+        {
+            enter_text.endEditing(true);
+        }
+    }
 
     override func viewDidLoad()
     {
@@ -362,6 +371,7 @@ class PaletteWindowController:UIViewController
         add_subview(enter_text, super_view, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
+        enter_text.addTarget(self, action: "started_editing", forControlEvents: UIControlEvents.TouchDown);
         var commit_width = text_height;
         commit_button.backgroundColor = UIColor.grayColor();
         commit_button.setTitle("ADD", forState: UIControlState.Normal);

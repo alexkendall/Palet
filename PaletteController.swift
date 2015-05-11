@@ -331,27 +331,12 @@ class AddController:UIViewController
         }
     }
     
-    func enter_name()
+    func started_editing()
     {
-        super_view.setNeedsLayout();
-        super_view.layoutIfNeeded();
-        
-        var frame_height = background.frame.height;
-        var frame_width = background.frame.width;
-        var text_height = margin * 2.0;
-        
-        enter_text.backgroundColor = UIColor.whiteColor();
-        enter_text.placeholder = "Create New Palette";
-        add_subview(enter_text, background, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
-        enter_text.setNeedsLayout();
-        enter_text.layoutIfNeeded();
-        var commit_width = text_height;
-        commit_button.backgroundColor = UIColor.grayColor();
-        commit_button.setTitle("ADD", forState: UIControlState.Normal);
-        commit_button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
-        commit_button.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted);
-        add_subview(commit_button, background, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
-        commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
+        if((enter_text.editing) && (enter_text.text == ""))
+        {
+            enter_text.endEditing(true);
+        }
     }
     
     override func viewDidLoad()
@@ -382,6 +367,7 @@ class AddController:UIViewController
         var bottom_margin = background.frame.height - picker_height;
         add_subview(text_background, background, 0.0, bottom_margin, 0.0, 0.0);
         
+        
         //-------------------------------------------------------------------------------------------
         // CONFIGURE FIELD TO ENTER TEXT
         //-------------------------------------------------------------------------------------------
@@ -395,6 +381,9 @@ class AddController:UIViewController
         add_subview(enter_text, background, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
+        enter_text.addTarget(self, action: "started_editing", forControlEvents: UIControlEvents.TouchDown);
+        
+        
         var commit_width = text_height;
         commit_button.backgroundColor = UIColor.grayColor();
         commit_button.setTitle("ADD", forState: UIControlState.Normal);
