@@ -50,6 +50,13 @@ class PaletteControler:UIViewController, UITableViewDelegate
                 palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
                 
                 picker_controller.notification_controller.set_text("Added " + current_color.hex_string + " to " + name);
+                
+                // handle reload of data into color view if already present
+                var this_index = row;
+                if(row == color_grid.current_index) // must reload data
+                {
+                    color_grid.add_colors();
+                }
             }
             else
             {
@@ -240,8 +247,6 @@ class GridController:UIViewController
             var del_margin = color_dim - del_dim;
             add_subview(delColBut, color_view, 0.0, del_margin, del_margin, 0.0);
             delColBut.addTarget(self, action: "delete_color:", forControlEvents: UIControlEvents.TouchDown);
-
-
         }
         var content_height:CGFloat = (color_height + (margin)) * CGFloat((ceil(Double(count) / 2.0)) * 2.0) / 2.0 + margin;
         scroll.contentSize = CGSize(width: scroll.bounds.width, height: content_height);

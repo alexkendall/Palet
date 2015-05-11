@@ -89,15 +89,6 @@ class CustomColor:Equatable
         
         // update hex string
         hex_string = NSString(format:"#%02X%02X%02X", in_red, in_green, in_blue) as String;
-        /*
-        switch(hex_string)
-        {
-            case "#FF0000": hex_string += " - red";
-            case "#00FF00": hex_string += " - green";
-            case "#0000FF": hex_string += " - blue";
-            default: hex_string = String(hex_string);
-        }
-        */
     }
     //-------------------------------------------------------------------------
     func set(var in_red:CGFloat, var in_green:CGFloat, var in_blue:CGFloat)
