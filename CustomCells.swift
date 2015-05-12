@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreData
 
  //------------------------------------------------------------------------------------------------
  // BEGIN MY TABLE VIEW CELL
@@ -329,8 +330,6 @@ class FavoriteTableViewCell:UITableViewCell
     
     func load_color(sender:UIButton!)
     {
-        //var color_index = favorites_data.colors.count - 1 - sender.tag; // LIFO STACK
-        //current_color = CustomColor(color: favorites_data.colors[color_index]);
         var index = sender.tag;
         current_color = CustomColor(color: getColor(index));
         picker_controller.viewDidLoad();
@@ -339,7 +338,6 @@ class FavoriteTableViewCell:UITableViewCell
     
     func add_delete()
     {
-        //println(self.row);
         var but_width = self.frame.size.height; // button width == button height == cell height
         var left_margin = self.frame.size.width - but_width;
         delete_button.backgroundColor = UIColor.redColor();
@@ -357,10 +355,24 @@ class FavoriteTableViewCell:UITableViewCell
     
     func delete_cell()
     {
-        // remove data source
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        let managedContext = appDelegate.managedObjectContext!;
+        
+        //  get object
         var index = favorites_data.colors.count - self.row - 1;
+        var object:NSManagedObject = favorites_data.colors[index];
+        
+        // delete object
         favorites_data.colors.removeAtIndex(index);
+        managedContext.deleteObject(object);
         favorites_controller.table_view.reloadData();
+        
+        // save context
+        var error:NSError?;
+        if !managedContext.save(&error)
+        {
+            println("Unable to delete favorite color");
+        }
     }
 }
 
