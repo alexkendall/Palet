@@ -42,7 +42,7 @@ class FavoritesController: UIViewController, UITableViewDelegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
-        current_color = CustomColor(color: favorites_data.colors[favorites_data.colors.count - indexPath.row - 1]); // LIFO STACK
+        current_color = getColor(indexPath.row);
         tabBarController?.selectedViewController = picker_controller;
         picker_controller.viewDidLoad();
         picker_controller.notification_controller.set_text("Loaded " + current_color.hex_string + " From Favorites");

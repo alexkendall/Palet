@@ -329,8 +329,10 @@ class FavoriteTableViewCell:UITableViewCell
     
     func load_color(sender:UIButton!)
     {
-        var color_index = favorites_data.colors.count - 1 - sender.tag; // LIFO STACK
-        current_color = CustomColor(color: favorites_data.colors[color_index]);
+        //var color_index = favorites_data.colors.count - 1 - sender.tag; // LIFO STACK
+        //current_color = CustomColor(color: favorites_data.colors[color_index]);
+        var index = sender.tag;
+        current_color = CustomColor(color: getColor(index));
         picker_controller.viewDidLoad();
         tab_controller.selectedViewController = picker_controller;
     }

@@ -307,7 +307,7 @@ class ColorInfoController:UIViewController
 }
 
 
-class AddController:UIViewController
+class AddController:UIViewController, UITextFieldDelegate
 {
     var super_view = UIView();
     var text_background = UIView();
@@ -315,6 +315,16 @@ class AddController:UIViewController
     var commit_button = UIButton();
     var palette_table = UITableView();
     var background = UIView();
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool
+    {
+        if(enter_text != "")
+        {
+            add_new_palette();
+        }
+        enter_text.endEditing(true);
+        return true;
+    }
     
     func add_new_palette()
     {
@@ -382,7 +392,7 @@ class AddController:UIViewController
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
         enter_text.addTarget(self, action: "started_editing", forControlEvents: UIControlEvents.TouchDown);
-        
+        enter_text.delegate = self;
         
         var commit_width = text_height;
         commit_button.backgroundColor = UIColor.grayColor();

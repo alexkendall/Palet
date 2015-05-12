@@ -1,5 +1,7 @@
 
 import UIKit
+import CoreData
+
 var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
 var color_height = 5.0 * margin;
 var ADD_PALETTE_TABLE_TAG = -5;
@@ -51,8 +53,38 @@ class ColorController: UIViewController
     
     func add_favorite()
     {
-        var temp = CustomColor(color: current_color);
+        var red:Int = current_color.red();
+        var green:Int = current_color.green();
+        var blue:Int = current_color.blue();
+        // 1
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        let managedContext = appDelegate.managedObjectContext!;
         
+        // 2
+        let entity = NSEntityDescription.entityForName("FavoriteColor", inManagedObjectContext: managedContext);
+        let color_data = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext);
+        
+        // 3
+        color_data.setValue(red, forKey: "red");
+        color_data.setValue(green, forKey: "green");
+        color_data.setValue(blue, forKey: "blue");
+        
+        //4
+        var error:NSError?
+        if !managedContext.save(&error)
+        {
+            println("ERROR SAVING FAVORITE COLOR");
+        }
+        
+        //5
+        favorites_data.colors.append(color_data);
+        
+        //var temp = CustomColor(color: current_color);
+        favorites_controller.table_view.reloadData();
+        notification_controller.set_text("Added " + current_color.hex_string + " to Favorites");
+        
+
+        /*
         // enforce no duplicate colors
         if(find(favorites_data.colors, current_color) == nil)
         {
@@ -68,7 +100,39 @@ class ColorController: UIViewController
             favorites_controller.table_view.reloadData();
             notification_controller.set_text("Color " + current_color.hex_string + " Already in Favorites");
         }
+        */
         notification_controller.bring_up();
+    }
+    
+    override func viewWillAppear(animated: Bool)
+    {
+        super.viewWillAppear(animated);
+        fetch_favorites();
+        
+    }
+    
+    func fetch_favorites()
+    {
+        // 1
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        let managedContext = appDelegate.managedObjectContext;
+        
+        // 2
+        let fetchRequest = NSFetchRequest(entityName: "FavoriteColor");
+        
+        // 3
+        var error:NSError?;
+        
+        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+        
+        if let results = fetchedResults
+        {
+            favorites_data.colors = results;
+        }
+        else
+        {
+            println("Unable to fetch favorite colors");
+        }
     }
     
     func selected_shade(sender:UIButton!)
@@ -308,13 +372,26 @@ class ColorController: UIViewController
     //-------------------------------------------------------------------------
 }
 
-class PaletteWindowController:UIViewController
+class PaletteWindowController:UIViewController, UITextFieldDelegate
 {
     var super_view = UIView();
     var text_background = UIView();
     var enter_text = UITextField();
     var commit_button = UIButton();
     var palette_table = UITableView();
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool
+    {
+        if(enter_text.text != "")
+        {
+            add_new_palette();
+        }
+        else
+        {
+            enter_text.endEditing(true);
+        }
+        return true;
+    }
     
     func add_new_palette()
     {
@@ -372,6 +449,7 @@ class PaletteWindowController:UIViewController
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
         enter_text.addTarget(self, action: "started_editing", forControlEvents: UIControlEvents.TouchDown);
+        enter_text.delegate = self;
         var commit_width = text_height;
         commit_button.backgroundColor = UIColor.grayColor();
         commit_button.setTitle("ADD", forState: UIControlState.Normal);
