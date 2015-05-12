@@ -18,7 +18,7 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
         var cell:FavoriteTableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! FavoriteTableViewCell;
-        var color = getColor(indexPath.row);
+        var color = getColor(indexPath.row, &favorites_data.colors);
         cell.set_info(color.hex_string, rgb_string: color.rgb_str(), custom_color: color, in_row: indexPath.row);
         return cell;
     }
@@ -57,12 +57,12 @@ class PalettesData:NSObject, UITableViewDataSource
 var favorites_data:FavoritesData = FavoritesData();
 var palette_data:PalettesData = PalettesData();
 
-
+//------------------------------------------------------------------------------------------------------------------
 
 // GETS COLOR CORESPONDING TO INDEX ROW, NOTE THIS FUNCTION HANDLES LIFO STACK ORIENTATION IN WHICH COLORS ARE STORED
-func getColor(var index:Int) ->CustomColor
+func getColor(var index:Int, inout array:Array<NSManagedObject>) ->CustomColor
 {
-    var color_data = favorites_data.colors[favorites_data.colors.count - 1 - index];  // STACK (LIFO)
+    var color_data = array[favorites_data.colors.count - 1 - index];  // STACK (LIFO)
     
     var red:Int = (color_data.valueForKey("red") as? Int)!;
     var green:Int = (color_data.valueForKey("green") as? Int)!;
@@ -71,4 +71,58 @@ func getColor(var index:Int) ->CustomColor
     var color = CustomColor(in_red: red, in_green: green, in_blue: blue);
     return color;
 }
+
+//------------------------------------------------------------------------------------------------------------------
+
+func InColorArray(var color:CustomColor, inout array:Array<NSManagedObject>)->Bool
+{
+    for(var i = 0; i < favorites_data.colors.count; ++i)
+    {
+        var temp_color = getColor(i, &array);
+        if(temp_color == color)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+func saveColor(var color:CustomColor, inout array:Array<NSManagedObject>, var entityName:String, var p_id:Int)
+{
+    var red:Int = color.red();
+    var green:Int = color.green();
+    var blue:Int = color.blue();
+    
+    // 1
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+    let managedContext = appDelegate.managedObjectContext!;
+    
+    // 2
+    let entity = NSEntityDescription.entityForName(entityName, inManagedObjectContext: managedContext);
+    let color_data = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext);
+    
+    // 3
+    color_data.setValue(red, forKey: "red");
+    color_data.setValue(green, forKey: "green");
+    color_data.setValue(blue, forKey: "blue");
+    color_data.setValue(p_id, forKey: "palette_id");
+    
+    //4
+    var error:NSError?
+    if !managedContext.save(&error)
+    {
+        println("ERROR SAVING FAVORITE COLOR");
+    }
+    //5
+    array.append(color_data);
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 

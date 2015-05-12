@@ -6,6 +6,7 @@ var current_color = CustomColor(in_red: 128, in_green: 128, in_blue: 128);
 var color_height = 5.0 * margin;
 var ADD_PALETTE_TABLE_TAG = -5;
 var BUTTON_DIM = margin * 1.5;
+var FAVORITE_ID:Int = -1;
 
 class ColorController: UIViewController
 {
@@ -51,56 +52,20 @@ class ColorController: UIViewController
         }
     }
     
+
+    
     func add_favorite()
     {
-        var red:Int = current_color.red();
-        var green:Int = current_color.green();
-        var blue:Int = current_color.blue();
-        // 1
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
-        let managedContext = appDelegate.managedObjectContext!;
-        
-        // 2
-        let entity = NSEntityDescription.entityForName("FavoriteColor", inManagedObjectContext: managedContext);
-        let color_data = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext);
-        
-        // 3
-        color_data.setValue(red, forKey: "red");
-        color_data.setValue(green, forKey: "green");
-        color_data.setValue(blue, forKey: "blue");
-        
-        //4
-        var error:NSError?
-        if !managedContext.save(&error)
+        if(InColorArray(current_color, &favorites_data.colors))
         {
-            println("ERROR SAVING FAVORITE COLOR");
+            notification_controller.set_text("Color " + current_color.hex_string + " Already in Favorites");
         }
-        
-        //5
-        favorites_data.colors.append(color_data);
-        
-        //var temp = CustomColor(color: current_color);
-        favorites_controller.table_view.reloadData();
-        notification_controller.set_text("Added " + current_color.hex_string + " to Favorites");
-        
-
-        /*
-        // enforce no duplicate colors
-        if(find(favorites_data.colors, current_color) == nil)
+        else
         {
-            favorites_data.colors.append(CustomColor(color: current_color));
+            saveColor(current_color, &favorites_data.colors, "Color", FAVORITE_ID);
             favorites_controller.table_view.reloadData();
             notification_controller.set_text("Added " + current_color.hex_string + " to Favorites");
         }
-        else    // if duplicate -> push selected duplicate to top of stack
-        {
-            var index = find(favorites_data.colors, temp);
-            favorites_data.colors.removeAtIndex(index!);    // remove and push copy to top of stack (LIFO)
-            favorites_data.colors.append(CustomColor(color: current_color));
-            favorites_controller.table_view.reloadData();
-            notification_controller.set_text("Color " + current_color.hex_string + " Already in Favorites");
-        }
-        */
         notification_controller.bring_up();
     }
     
@@ -118,8 +83,11 @@ class ColorController: UIViewController
         let managedContext = appDelegate.managedObjectContext;
         
         // 2
-        let fetchRequest = NSFetchRequest(entityName: "FavoriteColor");
-        
+        let fetchRequest = NSFetchRequest(entityName: "Color");
+        // define predicate for request
+        var _predicate:NSPredicate = NSPredicate(format: "palette_id == %i", FAVORITE_ID);
+        fetchRequest.predicate = _predicate;
+    
         // 3
         var error:NSError?;
         

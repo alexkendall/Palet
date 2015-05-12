@@ -331,7 +331,7 @@ class FavoriteTableViewCell:UITableViewCell
     func load_color(sender:UIButton!)
     {
         var index = sender.tag;
-        current_color = CustomColor(color: getColor(index));
+        current_color = CustomColor(color: getColor(index, &favorites_data.colors));
         picker_controller.viewDidLoad();
         tab_controller.selectedViewController = picker_controller;
     }
