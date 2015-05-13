@@ -7,6 +7,7 @@ var color_height = 5.0 * margin;
 var ADD_PALETTE_TABLE_TAG = -5;
 var BUTTON_DIM = margin * 1.5;
 var FAVORITE_ID:Int = -1;
+let EMPTY_STRING = "";
 
 class ColorController: UIViewController
 {
@@ -52,7 +53,7 @@ class ColorController: UIViewController
         }
     }
     
-
+    
     
     func add_favorite()
     {
@@ -62,7 +63,7 @@ class ColorController: UIViewController
         }
         else
         {
-            saveColor(current_color, &favorites_data.colors, "Color", FAVORITE_ID);
+            saveColor(current_color, &favorites_data.colors, "Color", " ");
             favorites_controller.table_view.reloadData();
             notification_controller.set_text("Added " + current_color.hex_string + " to Favorites");
         }
@@ -73,6 +74,7 @@ class ColorController: UIViewController
     {
         super.viewWillAppear(animated);
         fetch_favorites();
+        fetch_palettes();
         
     }
     
@@ -85,9 +87,10 @@ class ColorController: UIViewController
         // 2
         let fetchRequest = NSFetchRequest(entityName: "Color");
         // define predicate for request
-        var _predicate:NSPredicate = NSPredicate(format: "palette_id == %i", FAVORITE_ID);
-        fetchRequest.predicate = _predicate;
-    
+
+        var pred = NSPredicate(format:"palette_name like[cd] %@", " ");
+        fetchRequest.predicate = pred;
+        
         // 3
         var error:NSError?;
         
@@ -100,6 +103,30 @@ class ColorController: UIViewController
         else
         {
             println("Unable to fetch favorite colors");
+        }
+    }
+    
+    func fetch_palettes()
+    {
+        // 1
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        let managedContext = appDelegate.managedObjectContext;
+        
+        // 2
+        let fetchRequest = NSFetchRequest(entityName: "Palette");
+        
+        // 3
+        var error:NSError?;
+        
+        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+        
+        if let results = fetchedResults
+        {
+            saved_palettes = results;
+        }
+        else
+        {
+            println("Unable to fetch palettes");
         }
     }
     
@@ -199,7 +226,7 @@ class ColorController: UIViewController
         //-------------------------------------------------------------------------------------------
         // CONFIGURE ADD BUTTON IN COLOR VIEW
         //-------------------------------------------------------------------------------------------
-
+        
         add_button.backgroundColor = UIColor.lightGrayColor();
         add_button.layer.borderWidth = 0.5;
         add_button.setBackgroundImage(UIImage(named: "plus"), forState: UIControlState.Normal);
@@ -365,13 +392,23 @@ class PaletteWindowController:UIViewController, UITextFieldDelegate
     {
         if(enter_text.text != "")   // don't allow user to name palette the empty string
         {
-            enter_text.endEditing(true);  // remove keybaord
-            var name = enter_text.text;
-            var new_palette = Palette(name: enter_text.text);
-            palette_data.palettes.append(new_palette);
-            enter_text.text = "";   // reset text
-            palette_table.reloadData();
-            pallettes_controller.add_controler.palette_table.reloadData();
+            if(InPaletteArray(enter_text.text) == false)
+            {
+                enter_text.endEditing(true);  // remove keybaord
+                
+                var name = enter_text.text;
+                var pid = Int(palette_data.NEXT_PALETTE_ID++);
+                savePalette(name, &saved_palettes);
+                enter_text.text = "";   // reset text
+                palette_table.reloadData();
+                pallettes_controller.add_controler.palette_table.reloadData();
+                picker_controller.pallete_window.palette_table.reloadData();
+            }
+            else
+            {
+                picker_controller.notification_controller.set_text("Palette already exists!");
+                picker_controller.notification_controller.bring_up();
+            }
         }
     }
     
@@ -383,7 +420,7 @@ class PaletteWindowController:UIViewController, UITextFieldDelegate
             enter_text.endEditing(true);
         }
     }
-
+    
     override func viewDidLoad()
     {
         //-------------------------------------------------------------------------------------------
@@ -571,5 +608,5 @@ class NotificationController: UIViewController
     }
     
     //-------------------------------------------------------------------------
-
+    
 }

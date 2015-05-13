@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 import CoreData
 
- //------------------------------------------------------------------------------------------------
- // BEGIN MY TABLE VIEW CELL
- //------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+// BEGIN MY TABLE VIEW CELL
+//------------------------------------------------------------------------------------------------
 
 class myTableViewCell:UITableViewCell
 {
@@ -24,10 +24,27 @@ class myTableViewCell:UITableViewCell
     func delete_cell()
     {
         // remove this palette from data soruce
-        var index:Int = row; //palette_data.palettes.count - row - 1;
-        palette_data.palettes.removeAtIndex(index);
+        
+        // 1
+        var app_delgate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        var managedContext = app_delgate.managedObjectContext!;
+        
+        // 2
+        var index = row;
+        var palette = saved_palettes[index];
+        
+        // 3
+        managedContext.deleteObject(palette);
+        saved_palettes.removeAtIndex(index);
         pallettes_controller.add_controler.palette_table.reloadData();
         picker_controller.pallete_window.palette_table.reloadData();
+        
+        // 4
+        var error:NSError?;
+        if !managedContext.save(&error)
+        {
+            println("Unable to delete favorite color");
+        }
     }
     
     //------------------------------------------------------------------------------------------------
@@ -83,7 +100,7 @@ class myTableViewCell:UITableViewCell
         }
     }
     
-      //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
     
     // override this in order to enable vertical scrolling of view table
     override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool
@@ -105,7 +122,7 @@ class myTableViewCell:UITableViewCell
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier);
- 
+        
         // add pan recognizer
         var recognizer = UIPanGestureRecognizer(target: self, action: "pan_recognizer:");
         recognizer.delegate = self;
@@ -113,7 +130,7 @@ class myTableViewCell:UITableViewCell
     }
     
     //------------------------------------------------------------------------------------------------
-
+    
     required init(coder aDecoder: NSCoder)
     {
         fatalError("NSCoding not supported");
@@ -128,7 +145,7 @@ class myTableViewCell:UITableViewCell
     }
     
     //------------------------------------------------------------------------------------------------
-
+    
     override func setSelected(selected: Bool, animated: Bool)
     {
         super.setSelected(selected, animated: animated);
@@ -168,7 +185,7 @@ class FavoriteTableViewCell:UITableViewCell
         if(recognizer.state == UIGestureRecognizerState.Changed)
         {
             let translation = recognizer.translationInView(self);
-        
+            
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y);
             if(frame.origin.x < -frame.size.width / 2.0)
             {
@@ -207,7 +224,7 @@ class FavoriteTableViewCell:UITableViewCell
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier);
-    
+        
         // add pan recognizer
         var recognizer = UIPanGestureRecognizer(target: self, action: "pan_recognizer:");
         recognizer.delegate = self;

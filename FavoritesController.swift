@@ -54,4 +54,3 @@ class FavoritesController: UIViewController, UITableViewDelegate
         return true
     }
 }
-

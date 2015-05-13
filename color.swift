@@ -1,5 +1,5 @@
 
-// file defining custom color class 
+// file defining custom color class
 
 import Foundation
 import UIKit
@@ -21,14 +21,14 @@ class CustomColor:Equatable
     {
         set(in_red, in_green: in_green, in_blue: in_blue);
     }
-       //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     init(var color:UIColor)
     {
         var r:CGFloat = 0.0, g:CGFloat = 0.0, b:CGFloat = 0.0, a:CGFloat = 0.0;
         color.getRed(&r, green: &g, blue: &b, alpha: &a);
         set(r, in_green: g, in_blue: b);
     }
-       //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     init(var color:CustomColor) // copy consturctor
     {
         self.set(color.red(), in_green: color.green(), in_blue: color.blue());
@@ -44,17 +44,17 @@ class CustomColor:Equatable
         return UIColor(red: rgb_continuous[0], green: rgb_continuous[1],
             blue: rgb_continuous[2], alpha: 1.0);
     }
-     //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     func red()->Int
     {
         return rgb_discrete[0];
     }
-     //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     func green()->Int
     {
         return rgb_discrete[1];
     }
-     //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     func blue()->Int
     {
         return rgb_discrete[2]
@@ -72,7 +72,7 @@ class CustomColor:Equatable
             max = in_blue;
         }
         if(max > Int(MAX_RGB()))
-        // scale each color down proporionally if one value is greater than max rgb
+            // scale each color down proporionally if one value is greater than max rgb
         {
             in_red /= max;
             in_green /= max;
@@ -194,7 +194,7 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
         superview.addConstraint(top);
         shades.append(shade);
     }
-
+    
     // first half shades are linear combo of white and color
     var half_index = shades.count / 2;
     var increment = 1.0 / Float(half_index);

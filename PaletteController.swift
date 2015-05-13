@@ -2,10 +2,12 @@
 
 import Foundation
 import UIKit
+import CoreData
+let PALETTE_DUPLICATE_STR = "PALETTE ALREADY EXISTS!";
 
 class PaletteControler:UIViewController, UITableViewDelegate
 {
-
+    
     //var table_view = UITableView();
     var background = UIView();
     var superview = UIView();
@@ -29,41 +31,40 @@ class PaletteControler:UIViewController, UITableViewDelegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
     {
-        var name = palette_data.palettes[indexPath.row].palette_name;
-        current_palette_index = indexPath.row;
-        if(tableView.tag == ADD_PALETTE_TABLE_TAG) // add color to palette
+        var name = getPaletteName(indexPath.row);
+        if(tableView.tag == ADD_PALETTE_TABLE_TAG)  // IN PICKER_CONTROLLER -> ADD COLOR TO THIS PALETTE
         {
-            var row = indexPath.row;
-            var dupl_index = -1;
-            if(find(get_palette(row).colors, current_color) == nil) // color not already in palette
-            {
-                
-                palette_data.palettes[indexPath.row].colors.append(CustomColor(in_red: current_color.red(), in_green: current_color.green(), in_blue: current_color.blue()));
-                
-                picker_controller.notification_controller.set_text("Added " + current_color.hex_string + " to " + name);
-                
-                // handle reload of data into color view if already present
-                var this_index = row;
-                if(row == color_grid.current_index) // must reload data
-                {
-                    color_grid.add_colors();
-                }
-            }
-            else
-            {
-               picker_controller.notification_controller.set_text("Color " + current_color.hex_string + " already in " + name);
-            }
+            saveColor(current_color, &saved_palette_colors, "Color", name);
+            picker_controller.notification_controller.set_text("Added " + current_color.hex_string + " to " + name);
             picker_controller.notification_controller.bring_up();
         }
-        else
+        else    // IN PALETTE CONTROLER -> DISPLAY COLORS IN PALETTE
         {
+            println("display names");
+            
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+            let managedContext = appDelegate.managedObjectContext;
+            
+            let fetchRequest = NSFetchRequest(entityName: "Color");
+            var pred = NSPredicate(format:"palette_name like[cd] %@", name);
+            
+            fetchRequest.predicate = pred;
+            
+            var error:NSError?;
+            let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+            
+            if let results = fetchedResults
+            {
+                println(results.count);
+                color_grid.colors_source = results;
+            }
             color_grid.info_controller.view.removeFromSuperview();
-            color_grid.current_index = indexPath.row;
-            self.view.addSubview(color_grid.view); // bring up color grid
+            self.view.addSubview(color_grid.view);
             color_grid.exit.addTarget(self, action: "remove_grid", forControlEvents: UIControlEvents.TouchUpInside);
             color_grid.title_label.text = name;
             color_grid.add_colors();
         }
+        
     }
     
     
@@ -89,6 +90,7 @@ class GridController:UIViewController
     var current_index:Int = -1;
     var current_selected_color:Int = -1;
     var colors = Array<UIButton>();
+    var colors_source = Array<NSManagedObject>();
     var info_controller = ColorInfoController()
     
     override func viewDidLoad()
@@ -129,6 +131,7 @@ class GridController:UIViewController
     
     func selected_color(sender:UIButton!)
     {
+        /*
         if((current_selected_color > -1))
         {
             colors[current_selected_color].layer.borderWidth = 1.0;
@@ -143,7 +146,7 @@ class GridController:UIViewController
             sender.layer.borderColor = UIColor.whiteColor().CGColor;
             current_color = color;
             picker_controller.viewDidLoad();
-        
+            
             info_controller.set_text(current_color.hex_string + "  " + current_color.rgb_str());
             super_view.addSubview(info_controller.view);
         }
@@ -154,14 +157,17 @@ class GridController:UIViewController
             colors[sender.tag].layer.borderColor = UIColor.blackColor().CGColor;
             info_controller.view.removeFromSuperview();
         }
+        */
     }
     
     func delete_color(delete_button:UIButton!)
     {
+        /*
         assert(current_index > -1, "Current index is not positive");
         palette_data.palettes[current_index].colors.removeAtIndex(delete_button.tag);
         add_colors();   //reload colors
         info_controller.view.removeFromSuperview();
+        */
     }
     
     func add_colors()
@@ -184,15 +190,17 @@ class GridController:UIViewController
         var color_height = color_width;
         
         // iterate through each color in palette
-        var count = palette_data.palettes[current_index].colors.count;
+        var count = colors_source.count;
         var j = -1;
-
-        for(var i = 0; i < count; ++i)
+        
+        for(var i = 0; i < colors_source.count; ++i)
         {
             var color_view = UIButton();
             color_view.layer.borderWidth = 1.0;
             color_view.layer.borderColor = UIColor.blackColor().CGColor;
-            color_view.backgroundColor = palette_data.palettes[current_index].colors[i].get_UIColor();
+            
+            color_view.backgroundColor = getColor(i, &colors_source).get_UIColor();
+            //color_view.backgroundColor = colors_source[i]; //palette_data.palettes[current_index].colors[i].get_UIColor();
             color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
             scroll.addSubview(color_view);
             color_view.addTarget(self, action: "selected_color:", forControlEvents: UIControlEvents.TouchUpInside);
@@ -330,19 +338,32 @@ class AddController:UIViewController, UITextFieldDelegate
     {
         if(enter_text.text != "")   // don't allow user to name palette the empty string
         {
-            enter_text.endEditing(true);  // remove keybaord
-            var name = enter_text.text;
-            var new_palette = Palette(name: enter_text.text);
-            palette_data.palettes.append(new_palette);
-            enter_text.text = "";   // reset text
-            palette_table.reloadData();
-            pallettes_controller.add_controler.palette_table.reloadData();
-            picker_controller.pallete_window.palette_table.reloadData();
+            if(InPaletteArray(enter_text.text) == false)
+            {
+                enter_text.endEditing(true);  // remove keybaord
+                
+                var name = enter_text.text;
+                var pid = Int(palette_data.NEXT_PALETTE_ID++);
+                savePalette(name, &saved_palettes);
+                enter_text.text = "";   // reset text
+                palette_table.reloadData();
+                pallettes_controller.add_controler.palette_table.reloadData();
+                picker_controller.pallete_window.palette_table.reloadData();
+            }
+            else
+            {
+                enter_text.text = "";
+                enter_text.placeholder = PALETTE_DUPLICATE_STR;
+            }
         }
     }
     
     func started_editing()
     {
+        if(enter_text.placeholder == PALETTE_DUPLICATE_STR)
+        {
+            enter_text.placeholder = "Create New Palette";
+        }
         if((enter_text.editing) && (enter_text.text == ""))
         {
             enter_text.endEditing(true);
@@ -357,7 +378,7 @@ class AddController:UIViewController, UITextFieldDelegate
         super.viewDidLoad();
         super_view = self.view;
         
-
+        
         //-------------------------------------------------------------------------------------------
         // CONFIGURE BACKGROUND
         //-------------------------------------------------------------------------------------------
@@ -367,7 +388,7 @@ class AddController:UIViewController, UITextFieldDelegate
         background.layoutIfNeeded();
         background.setNeedsLayout();
         
-
+        
         //-------------------------------------------------------------------------------------------
         // CONFIGURE ADD PICKER TEXT VIEW
         //-------------------------------------------------------------------------------------------
@@ -402,7 +423,7 @@ class AddController:UIViewController, UITextFieldDelegate
         add_subview(commit_button, background, 0.0, frame_height - text_height + 1.0, frame_width - commit_width, 0.0);
         commit_button.addTarget(self, action: "add_new_palette", forControlEvents: UIControlEvents.TouchUpInside);
         
-
+        
         //-------------------------------------------------------------------------------------------
         // CONFIGURE ADD TABLE VIEW
         //-------------------------------------------------------------------------------------------
