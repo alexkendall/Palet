@@ -23,8 +23,8 @@ class myTableViewCell:UITableViewCell
     
     func delete_cell()
     {
-        // remove this palette from data soruce
-        
+        var name = getPaletteName(row);
+
         // 1
         var app_delgate = UIApplication.sharedApplication().delegate as! AppDelegate;
         var managedContext = app_delgate.managedObjectContext!;
@@ -42,6 +42,25 @@ class myTableViewCell:UITableViewCell
         // 4
         var error:NSError?;
         if !managedContext.save(&error)
+        {
+            println("Unable to delete favorite color");
+        }
+        
+        let fetchRequest = NSFetchRequest(entityName: "Color");
+        var pred = NSPredicate(format:"palette_name like[cd] %@", name);
+        fetchRequest.predicate = pred;
+        
+        var error_2:NSError?;
+        
+        let fetchedResults:Array<NSManagedObject> = managedContext.executeFetchRequest(fetchRequest, error: &error_2) as! [NSManagedObject];
+        
+        for(var i = 0; i < fetchedResults.count; ++i)
+        {
+            managedContext.deleteObject(fetchedResults[i]);
+        }
+        
+        var error_3:NSError?;
+        if !managedContext.save(&error_3)
         {
             println("Unable to delete favorite color");
         }

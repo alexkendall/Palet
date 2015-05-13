@@ -36,7 +36,7 @@ class PaletteControler:UIViewController, UITableViewDelegate
         {
             if(ColorInPalette(current_color, name)) // color is duplicate
             {
-                picker_controller.notification_controller.set_text("Color " + current_color.hex_string + " already in " + name);
+                picker_controller.notification_controller.set_text("Color " + current_color.hex_string + " already in palette");
             }
             else
             {
