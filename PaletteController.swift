@@ -34,30 +34,28 @@ class PaletteControler:UIViewController, UITableViewDelegate
         var name = getPaletteName(indexPath.row);
         if(tableView.tag == ADD_PALETTE_TABLE_TAG)  // IN PICKER_CONTROLLER -> ADD COLOR TO THIS PALETTE
         {
-            saveColor(current_color, &saved_palette_colors, "Color", name);
-            picker_controller.notification_controller.set_text("Added " + current_color.hex_string + " to " + name);
+            if(ColorInPalette(current_color, name)) // color is duplicate
+            {
+                picker_controller.notification_controller.set_text("Color " + current_color.hex_string + " already in " + name);
+            }
+            else
+            {
+                saveColor(current_color, &saved_palette_colors, "Color", name);
+                picker_controller.notification_controller.set_text("Added " + current_color.hex_string + " to " + name);
+                
+                // update palette color grid window if it is present
+                var sub_array:Array<UIView> = self.view.subviews as! Array<UIView>;
+                var color_view:UIView = color_grid.view;
+                
+                if(find(sub_array, color_view) != nil)  // color grid window is up...we must update it
+                {
+                    color_grid.add_colors();
+                }
+            }
             picker_controller.notification_controller.bring_up();
         }
         else    // IN PALETTE CONTROLER -> DISPLAY COLORS IN PALETTE
         {
-            println("display names");
-            
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
-            let managedContext = appDelegate.managedObjectContext;
-            
-            let fetchRequest = NSFetchRequest(entityName: "Color");
-            var pred = NSPredicate(format:"palette_name like[cd] %@", name);
-            
-            fetchRequest.predicate = pred;
-            
-            var error:NSError?;
-            let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
-            
-            if let results = fetchedResults
-            {
-                println(results.count);
-                color_grid.colors_source = results;
-            }
             color_grid.info_controller.view.removeFromSuperview();
             self.view.addSubview(color_grid.view);
             color_grid.exit.addTarget(self, action: "remove_grid", forControlEvents: UIControlEvents.TouchUpInside);
@@ -131,7 +129,6 @@ class GridController:UIViewController
     
     func selected_color(sender:UIButton!)
     {
-        /*
         if((current_selected_color > -1))
         {
             colors[current_selected_color].layer.borderWidth = 1.0;
@@ -141,7 +138,11 @@ class GridController:UIViewController
         {
             current_selected_color = sender.tag; // update current selected color from palette
             var color_index = sender.tag;
-            var color = CustomColor(color: palette_data.palettes[current_index].colors[color_index]);
+            //var color = CustomColor(color: palette_data.palettes[current_index].colors[color_index]);
+            var color = CustomColor(color:colors[color_index].backgroundColor!);
+            
+            
+            
             sender.layer.borderWidth = 3.0;
             sender.layer.borderColor = UIColor.whiteColor().CGColor;
             current_color = color;
@@ -157,21 +158,76 @@ class GridController:UIViewController
             colors[sender.tag].layer.borderColor = UIColor.blackColor().CGColor;
             info_controller.view.removeFromSuperview();
         }
-        */
     }
     
     func delete_color(delete_button:UIButton!)
     {
-        /*
-        assert(current_index > -1, "Current index is not positive");
-        palette_data.palettes[current_index].colors.removeAtIndex(delete_button.tag);
-        add_colors();   //reload colors
+        var palette_name = title_label.text;
+        var this_color = colors[delete_button.tag].backgroundColor;
+        var color = CustomColor(color: this_color!);
+        
+        var red:Int = color.red();
+        var green:Int = color.green();
+        var blue:Int = color.blue();
+        
+        // FETCH COLOR WITH THAT ATTRIBUTE FROM CORE DATA STACK
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        let managedContext = appDelegate.managedObjectContext;
+        
+        let fetchRequest = NSFetchRequest(entityName: "Color");
+        var pred = NSPredicate(format:"(palette_name like[cd] %@) AND (red == %i) AND (green == %i) AND (blue == %i)", palette_name!, red, green, blue);
+        fetchRequest.predicate = pred;
+        
+        var error:NSError?;
+        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+        
+        var resulting_objects = Array<NSManagedObject>();
+        
+        if let results = fetchedResults
+        {
+            resulting_objects = fetchedResults!;
+        }
+        
+        // DELETE THE OBJECT
+        for(var i = 0; i < resulting_objects.count; ++i)
+        {
+            managedContext?.deleteObject(resulting_objects[i]);
+        }
+        
+        //assert(resulting_objects.count == 1, "DUPLICATE FOUND HOWEVER THIS IS DISALLOWED");
+        
+        var error_2:NSError?;
+        if !managedContext!.save(&error_2)
+        {
+            println("Unable to delete favorite color");
+        }
+        
+        colors_source.removeAtIndex(delete_button.tag);
+        add_colors();
         info_controller.view.removeFromSuperview();
-        */
     }
     
     func add_colors()
     {
+        var name:String = title_label.text!;
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+        let managedContext = appDelegate.managedObjectContext;
+        
+        let fetchRequest = NSFetchRequest(entityName: "Color");
+        var pred = NSPredicate(format:"palette_name like[cd] %@", name);
+        
+        fetchRequest.predicate = pred;
+        
+        var error:NSError?;
+        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+        
+        if let results = fetchedResults
+        {
+            colors_source = results;
+        }
+        
         colors.removeAll(keepCapacity: true);
         current_selected_color = -1;
         if(current_index < 0 || (current_index > (palette_data.palettes.count - 1)))
@@ -199,8 +255,7 @@ class GridController:UIViewController
             color_view.layer.borderWidth = 1.0;
             color_view.layer.borderColor = UIColor.blackColor().CGColor;
             
-            color_view.backgroundColor = getColor(i, &colors_source).get_UIColor();
-            //color_view.backgroundColor = colors_source[i]; //palette_data.palettes[current_index].colors[i].get_UIColor();
+            color_view.backgroundColor = getPaletteColor(i, &colors_source).get_UIColor();
             color_view.setTranslatesAutoresizingMaskIntoConstraints(false);
             scroll.addSubview(color_view);
             color_view.addTarget(self, action: "selected_color:", forControlEvents: UIControlEvents.TouchUpInside);
@@ -450,3 +505,10 @@ class AddController:UIViewController, UITextFieldDelegate
     }
     
 }
+
+
+
+
+
+
+

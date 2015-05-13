@@ -117,23 +117,11 @@ func print(var cordinates:CGRect)
 
 //-------------------------------------------------------------------------------------------------------------------------
 
-func get_color(var palette_index:Int, var color_index:Int)->CustomColor
-{
-    return CustomColor(color: palette_data.palettes[palette_index].colors[color_index]);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------
-
-func get_palette(var palette_index:Int)->Palette
-{
-    return palette_data.palettes[palette_index];
-}
-
-//------------------------------------------------------------------------------------------------------------------
-
 // GETS COLOR CORESPONDING TO INDEX ROW, NOTE THIS FUNCTION HANDLES LIFO STACK ORIENTATION IN WHICH COLORS ARE STORED DONT USE THIS FOR PALETTE!!!
 func getColor(var index:Int, inout array:Array<NSManagedObject>) ->CustomColor
 {
+    //var color_data = array[array.count - 1 - index];  // STACK (LIFO)
+    
     var color_data = array[array.count - 1 - index];  // STACK (LIFO)
     
     var red:Int = (color_data.valueForKey("red") as? Int)!;
@@ -144,7 +132,17 @@ func getColor(var index:Int, inout array:Array<NSManagedObject>) ->CustomColor
     return color;
 }
 
-//func getPaletteColor
+func getPaletteColor(var index:Int, inout array:Array<NSManagedObject>) ->CustomColor
+{
+    var color_data = array[index]; 
+    
+    var red:Int = (color_data.valueForKey("red") as? Int)!;
+    var green:Int = (color_data.valueForKey("green") as? Int)!;
+    var blue:Int = (color_data.valueForKey("blue") as? Int)!;
+    
+    var color = CustomColor(in_red: red, in_green: green, in_blue: blue);
+    return color;
+}
 
 //------------------------------------------------------------------------------------------------------------------
 
@@ -248,5 +246,59 @@ func getPaletteName(var index:Int)->String
     return name;
 }
 
+//------------------------------------------------------------------------------------------------------------------
+
+func delete_object(var index:Int, inout array:Array<NSManagedObject>, var LIFO:Bool)
+{
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+    let managedContext = appDelegate.managedObjectContext!;
+    
+    //  get object
+    if(LIFO)
+    {
+        index = array.count - 1 - index;
+    }
+    
+    var object:NSManagedObject = array[index];
+    
+    // delete object
+    //favorites_data.colors.removeAtIndex(index);
+    managedContext.deleteObject(object);
+    //favorites_controller.table_view.reloadData();
+
+    // save context
+    var error:NSError?;
+    if !managedContext.save(&error)
+    {
+        println("Unable to delete favorite color");
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+func ColorInPalette(var color:CustomColor, var p_name:String)->Bool
+{
+    // FETCH COLOR WITH THAT ATTRIBUTE FROM CORE DATA STACK
+    var red:Int = color.red();
+    var green:Int = color.green();
+    var blue:Int = color.blue();
+    
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+    let managedContext = appDelegate.managedObjectContext;
+    
+    let fetchRequest = NSFetchRequest(entityName: "Color");
+    var pred = NSPredicate(format:"(palette_name like[cd] %@) AND (red == %i) AND (green == %i) AND (blue == %i)", p_name, red, green, blue);
+    fetchRequest.predicate = pred;
+    
+    var error:NSError?;
+    let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+    if(fetchedResults?.count == 0)
+    {
+        return false;
+    }
+    return true;
+}
 
 
