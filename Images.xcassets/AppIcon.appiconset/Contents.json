@@ -9,7 +9,7 @@
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "plt58.png",
+      "filename" : "plt58-1.png",
       "scale" : "2x"
     },
     {
@@ -21,13 +21,13 @@
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "Icon-40@2x.png",
+      "filename" : "Icon-Spotlight-40@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "Icon-40@3x.png",
+      "filename" : "Icon-Spotlight-40@3x.png",
       "scale" : "3x"
     },
     {
@@ -63,19 +63,19 @@
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "plt58-1.png",
+      "filename" : "plt58.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "Icon-40.png",
+      "filename" : "Icon-Spotlight-40.png",
       "scale" : "1x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "plt80-1.png",
+      "filename" : "plt_80.png",
       "scale" : "2x"
     },
     {
@@ -115,10 +115,16 @@
       "scale" : "2x"
     },
     {
+      "size" : "120x120",
+      "idiom" : "car",
+      "filename" : "plt120.png",
+      "scale" : "1x"
+    },
+    {
       "size" : "24x24",
       "idiom" : "watch",
       "scale" : "2x",
-      "filename" : "Icon-24@2x.png",
+      "filename" : "PLLT_logo48.png",
       "role" : "notificationCenter",
       "subtype" : "38mm"
     },
@@ -126,7 +132,7 @@
       "size" : "27.5x27.5",
       "idiom" : "watch",
       "scale" : "2x",
-      "filename" : "Icon-27.5@2x.png",
+      "filename" : "PLLT_logo_55.png",
       "role" : "notificationCenter",
       "subtype" : "42mm"
     },
@@ -148,7 +154,7 @@
       "size" : "40x40",
       "idiom" : "watch",
       "scale" : "2x",
-      "filename" : "plt80.png",
+      "filename" : "plt_80-1.png",
       "role" : "appLauncher",
       "subtype" : "38mm"
     },
@@ -156,7 +162,7 @@
       "size" : "44x44",
       "idiom" : "watch",
       "scale" : "2x",
-      "filename" : "Icon-44@2x.png",
+      "filename" : "PLLT_logo88.png",
       "role" : "longLook",
       "subtype" : "42mm"
     },
@@ -164,7 +170,7 @@
       "size" : "86x86",
       "idiom" : "watch",
       "scale" : "2x",
-      "filename" : "Icon-86@2x.png",
+      "filename" : "PLLT_logo172.png",
       "role" : "quickLook",
       "subtype" : "38mm"
     },
@@ -172,33 +178,9 @@
       "size" : "98x98",
       "idiom" : "watch",
       "scale" : "2x",
-      "filename" : "Icon-98@2x.png",
+      "filename" : "PLLT_logo196.png",
       "role" : "quickLook",
       "subtype" : "42mm"
-    },
-    {
-      "size" : "256x256",
-      "idiom" : "mac",
-      "filename" : "plt256.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "256x256",
-      "idiom" : "mac",
-      "filename" : "iTunesArtwork.png",
-      "scale" : "2x"
-    },
-    {
-      "size" : "512x512",
-      "idiom" : "mac",
-      "filename" : "plt512.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "512x512",
-      "idiom" : "mac",
-      "filename" : "iTunesArtwork@2x.png",
-      "scale" : "2x"
     }
   ],
   "info" : {
