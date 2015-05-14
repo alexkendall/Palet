@@ -79,54 +79,15 @@ class ColorController: UIViewController
     
     func fetch_favorites()
     {
-        // 1
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
-        let managedContext = appDelegate.managedObjectContext;
-        
-        // 2
-        let fetchRequest = NSFetchRequest(entityName: "Color");
-        // define predicate for request
-
         var pred = NSPredicate(format:"palette_name like[cd] %@", " ");
-        fetchRequest.predicate = pred;
-        
-        // 3
-        var error:NSError?;
-        
-        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
-        
-        if let results = fetchedResults
-        {
-            favorites_data.colors = results;
-        }
-        else
-        {
-            println("Unable to fetch favorite colors");
-        }
+        var results:[NSManagedObject] = fetch("Color", pred, true);
+        favorites_data.colors = results;
     }
     
     func fetch_palettes()
     {
-        // 1
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
-        let managedContext = appDelegate.managedObjectContext;
-        
-        // 2
-        let fetchRequest = NSFetchRequest(entityName: "Palette");
-        
-        // 3
-        var error:NSError?;
-        
-        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
-        
-        if let results = fetchedResults
-        {
-            saved_palettes = results;
-        }
-        else
-        {
-            println("Unable to fetch palettes");
-        }
+        var results:[NSManagedObject] = fetch("Palette", NSPredicate(), false);
+        saved_palettes = results;
     }
     
     func selected_shade(sender:UIButton!)
@@ -470,7 +431,7 @@ class PaletteWindowController:UIViewController, UITextFieldDelegate
         add_subview(palette_table, super_view, picker_height - 1.0, 0.0, 0.0, 0.0);
         palette_table.backgroundColor = UIColor.lightGrayColor();
         palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
-        palette_table.registerClass(myTableViewCell.self, forCellReuseIdentifier: "cell");
+        palette_table.registerClass(paletteTableViewCell.self, forCellReuseIdentifier: "cell");
         
         // tag table so we can use different color cells fromt those in PaletteController
         palette_table.tag = ADD_PALETTE_TABLE_TAG;

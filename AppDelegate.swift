@@ -14,7 +14,6 @@ let picker_controller = ColorController();
 let favorites_controller = FavoritesController();
 let pallettes_controller = PaletteControler();
 let controllers = [favorites_controller,picker_controller, pallettes_controller];
-let NUM_SHADES = 9;
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -31,9 +30,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: firstImage, tag: 1);
         favorites_controller.tabBarItem = UITabBarItem(title: "Favorites", image: secondImage, tag: 2);
         pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: third_image, tag: 3);
-        //tab_controller.tabBar.tintColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         tab_controller.selectedViewController = picker_controller;
+        
+        
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate!
+        let managedContext = appDelegate.managedObjectContext;
         
         return true
     }

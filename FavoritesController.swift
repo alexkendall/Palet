@@ -5,7 +5,6 @@
 //  Created by Alex Harrison on 5/5/15.
 //  Copyright (c) 2015 Alex Harrison. All rights reserved.
 //
-var saved_colors = Array<CustomColor>();
 
 import Foundation
 import UIKit

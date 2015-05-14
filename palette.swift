@@ -3,6 +3,7 @@
 
 import Foundation
 
+/*
 class Palette:NSObject
 {
     var colors = Array<CustomColor>();
@@ -32,3 +33,4 @@ class Palette:NSObject
         super.init();
     }
 }
+*/

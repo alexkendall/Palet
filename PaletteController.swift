@@ -210,30 +210,19 @@ class GridController:UIViewController
     
     func add_colors()
     {
-        var name:String = title_label.text!;
-        
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
-        let managedContext = appDelegate.managedObjectContext;
-        
-        let fetchRequest = NSFetchRequest(entityName: "Color");
-        var pred = NSPredicate(format:"palette_name like[cd] %@", name);
-        
-        fetchRequest.predicate = pred;
-        
-        var error:NSError?;
-        let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
-        
-        if let results = fetchedResults
-        {
-            colors_source = results;
-        }
+        var palette_name:String = title_label.text!;
+        var pred = NSPredicate(format:"palette_name like[cd] %@", palette_name);
+        colors_source = fetch("Color", pred, true);
         
         colors.removeAll(keepCapacity: true);
         current_selected_color = -1;
+        /*
         if(current_index < 0 || (current_index > (palette_data.palettes.count - 1)))
         {
             EXIT_FAILURE;
         }
+        */
+        
         // clear scroll
         var subs = scroll.subviews;
         for(var i = 0; i < subs.count; ++i)
@@ -398,7 +387,7 @@ class AddController:UIViewController, UITextFieldDelegate
                 enter_text.endEditing(true);  // remove keybaord
                 
                 var name = enter_text.text;
-                var pid = Int(palette_data.NEXT_PALETTE_ID++);
+                //var pid = Int(palette_data.NEXT_PALETTE_ID++);
                 savePalette(name, &saved_palettes);
                 enter_text.text = "";   // reset text
                 palette_table.reloadData();
@@ -487,7 +476,7 @@ class AddController:UIViewController, UITextFieldDelegate
         add_subview(palette_table, background, picker_height - 1.0, 0.0, 0.0, 0.0);
         palette_table.backgroundColor = UIColor.lightGrayColor();
         palette_table.separatorStyle = UITableViewCellSeparatorStyle.None;
-        palette_table.registerClass(myTableViewCell.self, forCellReuseIdentifier: "cell");
+        palette_table.registerClass(paletteTableViewCell.self, forCellReuseIdentifier: "cell");
         
         // tag table so we can use different color cells fromt those in PaletteController
         palette_table.tag = 0;
@@ -505,10 +494,3 @@ class AddController:UIViewController, UITextFieldDelegate
     }
     
 }
-
-
-
-
-
-
-

@@ -14,7 +14,7 @@ import CoreData
 // BEGIN MY TABLE VIEW CELL
 //------------------------------------------------------------------------------------------------
 
-class myTableViewCell:UITableViewCell
+class paletteTableViewCell:UITableViewCell
 {
     var originalCenter = CGPoint();
     var deleteOnDragRelease = false;
@@ -24,46 +24,27 @@ class myTableViewCell:UITableViewCell
     func delete_cell()
     {
         var name = getPaletteName(row);
-
-        // 1
+        var pred = NSPredicate(format:"palette_name like[cd] %@", name);
+        var palette_colors = fetch("Color", pred, true);    // get all colors belonging to this palette
+        var palette = saved_palettes[row];  // get palette
+        
         var app_delgate = UIApplication.sharedApplication().delegate as! AppDelegate;
         var managedContext = app_delgate.managedObjectContext!;
+        for(var i = 0; i < palette_colors.count; ++i)   // delete all colors belonging to palette
+        {
+            managedContext.deleteObject(palette_colors[i]);
+        }
+        managedContext.deleteObject(palette);   // delete palatte
+        saved_palettes.removeAtIndex(row);
         
-        // 2
-        var index = row;
-        var palette = saved_palettes[index];
-        
-        // 3
-        managedContext.deleteObject(palette);
-        saved_palettes.removeAtIndex(index);
-        pallettes_controller.add_controler.palette_table.reloadData();
-        picker_controller.pallete_window.palette_table.reloadData();
-        
-        // 4
         var error:NSError?;
         if !managedContext.save(&error)
         {
             println("Unable to delete favorite color");
         }
         
-        let fetchRequest = NSFetchRequest(entityName: "Color");
-        var pred = NSPredicate(format:"palette_name like[cd] %@", name);
-        fetchRequest.predicate = pred;
-        
-        var error_2:NSError?;
-        
-        let fetchedResults:Array<NSManagedObject> = managedContext.executeFetchRequest(fetchRequest, error: &error_2) as! [NSManagedObject];
-        
-        for(var i = 0; i < fetchedResults.count; ++i)
-        {
-            managedContext.deleteObject(fetchedResults[i]);
-        }
-        
-        var error_3:NSError?;
-        if !managedContext.save(&error_3)
-        {
-            println("Unable to delete favorite color");
-        }
+        pallettes_controller.add_controler.palette_table.reloadData();  // reload palette data
+        picker_controller.pallete_window.palette_table.reloadData();
     }
     
     //------------------------------------------------------------------------------------------------

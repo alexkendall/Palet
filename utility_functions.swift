@@ -301,4 +301,32 @@ func ColorInPalette(var color:CustomColor, var p_name:String)->Bool
     return true;
 }
 
+//------------------------------------------------------------------------------------------------------------------
+
+func fetch(var entity_name:String, var predicate:NSPredicate, var has_predictae:Bool)-> [NSManagedObject]
+{
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate;
+    let managedContext = appDelegate.managedObjectContext;
+    
+    let fetchRequest = NSFetchRequest(entityName: entity_name);
+    if(has_predictae)
+    {
+        fetchRequest.predicate = predicate;
+    }
+    
+    var error:NSError?;
+    
+    let fetchedResults = managedContext?.executeFetchRequest(fetchRequest, error: &error) as? [NSManagedObject];
+    
+    if let results = fetchedResults
+    {
+        return fetchedResults!;
+    }
+    else
+    {
+        println("Unable to complete fetch request");
+        return [NSManagedObject]();
+    }
+}
+
 

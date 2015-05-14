@@ -12,7 +12,6 @@ var current_palette_index = -1;
 
 class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite color data
 {
-    //var colors = Array<CustomColor>();
     var colors = Array<NSManagedObject>();
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
@@ -30,19 +29,15 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
 
 
 class PalettesData:NSObject, UITableViewDataSource
-{
-    var NEXT_PALETTE_ID:UInt64 = 0;
-    var palettes = Array<Palette>();
-    
+{    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        //return palettes.count;
         return saved_palettes.count;
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-        var cell:myTableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! myTableViewCell;
+        var cell:paletteTableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as! paletteTableViewCell;
         cell.layer.borderWidth = 1.0;
         cell.layer.borderColor = UIColor.blackColor().CGColor;
         cell.backgroundColor = UIColor.grayColor();
@@ -60,10 +55,7 @@ class PalettesData:NSObject, UITableViewDataSource
 
 var favorites_data:FavoritesData = FavoritesData();
 var palette_data:PalettesData = PalettesData();
-
-
 var saved_palettes:Array<NSManagedObject> = Array<NSManagedObject>();
 var saved_palette_colors:Array<NSManagedObject> = Array<NSManagedObject>();
-
 
 
