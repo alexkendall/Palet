@@ -28,6 +28,7 @@ class FavoritesData:NSObject, UITableViewDataSource  // data source of favorite 
     }
 }
 
+
 class PalettesData:NSObject, UITableViewDataSource
 {
     var NEXT_PALETTE_ID:UInt64 = 0;

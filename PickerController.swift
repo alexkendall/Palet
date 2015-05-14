@@ -1,4 +1,3 @@
-
 import UIKit
 import CoreData
 
@@ -397,7 +396,7 @@ class PaletteWindowController:UIViewController, UITextFieldDelegate
                 enter_text.endEditing(true);  // remove keybaord
                 
                 var name = enter_text.text;
-                var pid = Int(palette_data.NEXT_PALETTE_ID++);
+                //var pid = Int(palette_data.NEXT_PALETTE_ID++);
                 savePalette(name, &saved_palettes);
                 enter_text.text = "";   // reset text
                 palette_table.reloadData();
