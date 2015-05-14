@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "color_palette.png"
+      "filename" : "Trash-100.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "color_palette@2x.png"
+      "filename" : "Trash-100@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "color_palette@3x.png"
+      "filename" : "Trash-100@3x.png"
     }
   ],
   "info" : {
