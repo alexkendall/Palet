@@ -167,10 +167,6 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
     shades.removeAll(keepCapacity: true);
     var black = CustomColor(in_red: 0, in_green: 0, in_blue: 0);
     var white = CustomColor(in_red: 255, in_green: 255, in_blue: 255);
-    if(num_shades % 2 == 0) // should be off number such that base color is in middle
-    {
-        ++num_shades;
-    }
     for(var i = 0; i < num_shades; ++i)
     {
         // configure shade button in heiarchy
@@ -194,8 +190,17 @@ func generate_shades(inout shades:Array<UIButton>,var num_shades:Int, inout supe
         superview.addConstraint(top);
         shades.append(shade);
     }
+}
+
+func edit_shades(inout shades:Array<UIButton>,var num_shades:Int, var color:CustomColor)
+{
+    var hex_str:String = color.hex_string;
     
+    println(hex_str);
     // first half shades are linear combo of white and color
+    var white = CustomColor(in_red: 1.0, in_green: 1.0, in_blue: 1.0);
+    var black = CustomColor(in_red: 0.0, in_green: 0.0, in_blue: 0.0);
+    
     var half_index = shades.count / 2;
     var increment = 1.0 / Float(half_index);
     var t:Float = 0.0;

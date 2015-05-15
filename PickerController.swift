@@ -118,13 +118,10 @@ class ColorController: UIViewController
         hex_text.text = current_color.hex_string;
         var rgb_str = String(format: "rgb(%i, %i, %i)", current_color.red(), current_color.green(), current_color.blue());
         rgb_text.text = rgb_str;
-        generate_shades(&shades, NUM_SHADES, &shade_view, current_color);
-        for(var i = 0; i < shades.count; ++i)
-        {
-            assert(shades.count == NUM_SHADES, "ERROR INCORRECT NUMBER OF SHADES");
-            shades[i].addTarget(self, action: "selected_shade:", forControlEvents: UIControlEvents.TouchUpInside);
-            shades[i].tag = i; // tag shade so we know which color to update to when shade is selected
-        }
+        
+
+        edit_shades(&shades, 9, current_color);
+        
     }
     
     func save_color(sender:UIButton!)
@@ -302,7 +299,7 @@ class ColorController: UIViewController
         super_view.addConstraint(shade_width);
         super_view.addConstraint(shade_top);
         super_view.addConstraint(shade_bottom);
-        moved_slider();
+        //moved_slider();
         
         // add target for saving color
         favorite_button.addTarget(self, action: "add_favorite", forControlEvents: UIControlEvents.TouchUpInside);
@@ -319,6 +316,17 @@ class ColorController: UIViewController
         // ADD NOTIFICATION VIEW
         //-------------------------------------------------------------------------------------------
         super_view.addSubview(notification_controller.view);
+        
+        
+        
+        generate_shades(&shades, NUM_SHADES, &shade_view, current_color);
+        for(var i = 0; i < shades.count; ++i)
+        {
+            assert(shades.count == NUM_SHADES, "ERROR INCORRECT NUMBER OF SHADES");
+            shades[i].addTarget(self, action: "selected_shade:", forControlEvents: UIControlEvents.TouchUpInside);
+            shades[i].tag = i; // tag shade so we know which color to update to when shade is selected
+        }
+        moved_slider();
     }
     //-------------------------------------------------------------------------
     override func didReceiveMemoryWarning() {

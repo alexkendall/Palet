@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
         tab_controller.viewControllers = controllers;
         window?.rootViewController = tab_controller;
         let firstImage = UIImage(named: "picker_v2");
@@ -32,7 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         pallettes_controller.tabBarItem = UITabBarItem(title: "Palettes", image: third_image, tag: 3);
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         tab_controller.selectedViewController = picker_controller;
-        
         
         
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate!
