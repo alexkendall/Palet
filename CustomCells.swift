@@ -51,7 +51,6 @@ class paletteTableViewCell:UITableViewCell
     
     func add_delete()
     {
-        //println(self.row);
         var but_width = self.frame.size.height; // button width == button height == cell height
         var left_margin = self.frame.size.width - but_width;
         delete_button.backgroundColor = UIColor.redColor();
@@ -83,7 +82,7 @@ class paletteTableViewCell:UITableViewCell
             let translation = recognizer.translationInView(self);
             
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y);
-            if(frame.origin.x < -frame.size.width / 2.0)
+            if(frame.origin.x < -frame.size.width / 4.0)
             {
                 add_delete();
             }
@@ -187,7 +186,7 @@ class FavoriteTableViewCell:UITableViewCell
             let translation = recognizer.translationInView(self);
             
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y);
-            if(frame.origin.x < -frame.size.width / 2.0)
+            if(frame.origin.x < -frame.size.width / 4.0)
             {
                 add_delete();
             }
@@ -299,16 +298,30 @@ class FavoriteTableViewCell:UITableViewCell
         self.addConstraint(color_width_constr);
         
         //-----------------------------------------------------------------------------
+        if((DEVICE_VERSION == DEVICE_TYPE.IPHONE_4) || (DEVICE_VERSION == DEVICE_TYPE.IPHONE_5))    // make text size small enough to fit
+        {
+            hex_display.titleLabel?.font = UIFont.systemFontOfSize(11.0);
+            rgb_label.titleLabel?.font = UIFont.systemFontOfSize(11.0);
+        }
+        else if((DEVICE_VERSION == DEVICE_TYPE.IPHONE_5) || (DEVICE_VERSION == DEVICE_TYPE.IPHONE_6) || (DEVICE_VERSION == DEVICE_TYPE.IPHONE_6_PLUS))
+        {
+            rgb_label.titleLabel?.font = UIFont.systemFontOfSize(14.0);
+            hex_display.titleLabel?.font = UIFont.systemFontOfSize(14.0);
+        }
+        else    // ipdad
+        {
+            rgb_label.titleLabel?.font = UIFont.systemFontOfSize(16.0);
+            hex_display.titleLabel?.font = UIFont.systemFontOfSize(16.0);
+        }
+        
         
         // configure hex font to display
         var hex_string:String = custom_color.hex_string;
         hex_display.setTranslatesAutoresizingMaskIntoConstraints(false);
         hex_display.setTitle(hex_string, forState: UIControlState.Normal);
         hex_display.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
-        hex_display.titleLabel?.font = UIFont.systemFontOfSize(14.0);
         hex_display.tag = row;
         hex_display.addTarget(self, action: "load_color:", forControlEvents: UIControlEvents.TouchUpInside);
-        
         
         var centerx_const = cell_margin;
         var left_hex = NSLayoutConstraint(item: hex_display, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: color_view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: cell_margin * 2.0);
@@ -327,7 +340,6 @@ class FavoriteTableViewCell:UITableViewCell
         rgb_label.setTranslatesAutoresizingMaskIntoConstraints(false);
         rgb_label.setTitle(rgb_string, forState: UIControlState.Normal);
         rgb_label.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
-        rgb_label.titleLabel?.font = UIFont.systemFontOfSize(14.0);
         rgb_label.tag = row;
         rgb_label.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Left;
         rgb_label.addTarget(self, action: "load_color:", forControlEvents: UIControlEvents.TouchUpInside);
@@ -352,6 +364,8 @@ class FavoriteTableViewCell:UITableViewCell
         current_color = CustomColor(color: getColor(index, &favorites_data.colors));
         picker_controller.viewDidLoad();
         tab_controller.selectedViewController = picker_controller;
+        picker_controller.notification_controller.set_text("Loaded " + current_color.hex_string + " From Favorites");
+        picker_controller.notification_controller.bring_up();
     }
     
     func add_delete()

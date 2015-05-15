@@ -14,6 +14,11 @@ let picker_controller = ColorController();
 let favorites_controller = FavoritesController();
 let pallettes_controller = PaletteControler();
 let controllers = [favorites_controller,picker_controller, pallettes_controller];
+enum DEVICE_TYPE{case IPHONE_4, IPHONE_5, IPHONE_6, IPHONE_6_PLUS, IPAD, IWATCH};
+var DEVICE_VERSION:DEVICE_TYPE = DEVICE_TYPE.IPHONE_6; // default device
+var DEVICE_HEIGHT = CGFloat();
+var DEVICE_WIDTH = CGFloat();
+var NUM_SHADES:Int = 9;
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
+        setMargin();
         tab_controller.viewControllers = controllers;
         window?.rootViewController = tab_controller;
         let firstImage = UIImage(named: "picker_v2");
@@ -34,11 +40,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tab_controller.tabBar.tintColor = UIColor.blackColor();
         tab_controller.selectedViewController = picker_controller;
         
-        
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate!
         let managedContext = appDelegate.managedObjectContext;
         
         return true
+    }
+    
+    func setMargin()
+    {
+        setDeviceInfo();
+        switch(DEVICE_VERSION)
+        {
+        case .IPHONE_4:
+            margin = 25.0;
+            NUM_SHADES = 5;
+
+        case .IPHONE_5:
+            margin = 25.0;
+            NUM_SHADES = 7;
+            
+        case .IPHONE_6:
+            margin = 25.0;
+            
+        case .IPHONE_6_PLUS:
+            margin = 25.0;
+        
+        case .IPAD:
+            margin = 30.0;
+            NUM_SHADES = 11;
+            
+        default:
+            margin = 25.0;
+        }
+    }
+    
+    func setDeviceInfo()
+    {
+        DEVICE_HEIGHT = pallettes_controller.view.bounds.height;
+        DEVICE_WIDTH = pallettes_controller.view.bounds.width;
+        
+        if(DEVICE_HEIGHT == 480)
+        {
+            DEVICE_VERSION = DEVICE_TYPE.IPHONE_4;
+        }
+        else if(DEVICE_HEIGHT == 568)
+        {
+            DEVICE_VERSION = DEVICE_TYPE.IPHONE_5;
+        }
+        else if(DEVICE_HEIGHT == 667)
+        {
+            DEVICE_VERSION = DEVICE_TYPE.IPHONE_6;
+        }
+        else if(DEVICE_HEIGHT == 736)
+        {
+            DEVICE_VERSION = DEVICE_TYPE.IPHONE_6_PLUS;
+        }
+        else if(DEVICE_HEIGHT > 736)
+        {
+            DEVICE_VERSION = DEVICE_TYPE.IPAD;
+        }
     }
     
     func applicationWillResignActive(application: UIApplication) {

@@ -44,8 +44,8 @@ class FavoritesController: UIViewController, UITableViewDelegate
         current_color = getColor(indexPath.row, &favorites_data.colors);
         tabBarController?.selectedViewController = picker_controller;
         picker_controller.viewDidLoad();
-        picker_controller.notification_controller.set_text("Loaded " + current_color.hex_string + " From Favorites");
-        picker_controller.notification_controller.bring_up();
+        //picker_controller.notification_controller.set_text("Loaded " + current_color.hex_string + " From Favorites");
+        //picker_controller.notification_controller.bring_up();
     }
     
     override func prefersStatusBarHidden() -> Bool

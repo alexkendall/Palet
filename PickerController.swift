@@ -10,7 +10,6 @@ let EMPTY_STRING = "";
 
 class ColorController: UIViewController
 {
-    let NUM_SHADES = 9;
     var background = UIView();
     var super_view = UIView();
     var color_view = UIButton();
@@ -92,6 +91,8 @@ class ColorController: UIViewController
     
     func selected_shade(sender:UIButton!)
     {
+        notification_controller.set_text("Selected shade " + current_color.hex_string);
+        notification_controller.bring_up();
         var shade_color = shades[sender.tag].backgroundColor;
         
         var red:CGFloat = 0.0, blue:CGFloat = 0.0, green:CGFloat = 0.0, alpha:CGFloat = 0.0;
@@ -120,7 +121,7 @@ class ColorController: UIViewController
         rgb_text.text = rgb_str;
         
 
-        edit_shades(&shades, 9, current_color);
+        edit_shades(&shades, NUM_SHADES, current_color);
         
     }
     
@@ -137,6 +138,7 @@ class ColorController: UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         super_view = self.view;
         color_height = (super_view.bounds.height - toolbar_height) / 5.0;
         add_subview(background, super_view, 1.0, 1.0, 1.0);
