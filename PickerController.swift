@@ -410,7 +410,7 @@ class PaletteWindowController:UIViewController, UITextFieldDelegate
         //-------------------------------------------------------------------------------------------
         var text_height:CGFloat = 44.0;
         enter_text.backgroundColor = UIColor.whiteColor();
-        enter_text.placeholder = "Create New Palette";
+        enter_text.placeholder = DEFAULT_PLACEHOLDER;
         add_subview(enter_text, super_view, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
@@ -448,7 +448,6 @@ class PaletteWindowController:UIViewController, UITextFieldDelegate
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
 }
 
 class NotificationController: UIViewController

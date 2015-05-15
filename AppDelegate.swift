@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         tab_controller.viewControllers = controllers;
         window?.rootViewController = tab_controller;
-        let firstImage = UIImage(named: "picker");
+        let firstImage = UIImage(named: "picker_v2");
         let secondImage = UIImage(named: "favorite");
         let third_image = UIImage(named: "color_palette");
         picker_controller.tabBarItem = UITabBarItem(title: "Picker", image: firstImage, tag: 1);

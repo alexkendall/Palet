@@ -156,7 +156,7 @@ class paletteTableViewCell:UITableViewCell
 }
 
 //------------------------------------------------------------------------------------------------
-// END MY TABLE VIEW CELL
+// END PALETTE TABLE VIEW CELL
 //------------------------------------------------------------------------------------------------
 
 
@@ -329,10 +329,11 @@ class FavoriteTableViewCell:UITableViewCell
         rgb_label.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
         rgb_label.titleLabel?.font = UIFont.systemFontOfSize(14.0);
         rgb_label.tag = row;
+        rgb_label.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Left;
         rgb_label.addTarget(self, action: "load_color:", forControlEvents: UIControlEvents.TouchUpInside);
         
         
-        var left_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: hex_display, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: -10.0);
+        var left_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: hex_display, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 15.0);
         var center_yrgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0);
         var height_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: 0.0);
         var width_rgb = NSLayoutConstraint(item: rgb_label, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Width, multiplier: 0.5, constant: 0.0);

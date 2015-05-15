@@ -4,6 +4,7 @@ import Foundation
 import UIKit
 import CoreData
 let PALETTE_DUPLICATE_STR = "PALETTE ALREADY EXISTS!";
+let DEFAULT_PLACEHOLDER = "Create New Palette";
 
 class PaletteControler:UIViewController, UITableViewDelegate
 {
@@ -195,8 +196,6 @@ class GridController:UIViewController
             managedContext?.deleteObject(resulting_objects[i]);
         }
         
-        //assert(resulting_objects.count == 1, "DUPLICATE FOUND HOWEVER THIS IS DISALLOWED");
-        
         var error_2:NSError?;
         if !managedContext!.save(&error_2)
         {
@@ -212,16 +211,10 @@ class GridController:UIViewController
     {
         var palette_name:String = title_label.text!;
         var pred = NSPredicate(format:"palette_name like[cd] %@", palette_name);
-        colors_source = fetch("Color", pred, true);
+        colors_source = fetch("Color", pred, true); // retrieve each color belonging to this palette
         
-        colors.removeAll(keepCapacity: true);
+        colors.removeAll(keepCapacity: true); // clear pre-existing views-> refresh
         current_selected_color = -1;
-        /*
-        if(current_index < 0 || (current_index > (palette_data.palettes.count - 1)))
-        {
-            EXIT_FAILURE;
-        }
-        */
         
         // clear scroll
         var subs = scroll.subviews;
@@ -280,7 +273,6 @@ class GridController:UIViewController
             var delColBut = UIButton();
             delColBut.backgroundColor = UIColor.blackColor();
             delColBut.setTitle("x", forState: UIControlState.Normal);
-            //delColBut.titleLabel?.font = UIFont.systemFontOfSize(14.0);
             delColBut.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
             delColBut.tag = i;
             color_view.layoutIfNeeded();
@@ -406,7 +398,7 @@ class AddController:UIViewController, UITextFieldDelegate
     {
         if(enter_text.placeholder == PALETTE_DUPLICATE_STR)
         {
-            enter_text.placeholder = "Create New Palette";
+            enter_text.placeholder = DEFAULT_PLACEHOLDER;
         }
         if((enter_text.editing) && (enter_text.text == ""))
         {
@@ -452,7 +444,7 @@ class AddController:UIViewController, UITextFieldDelegate
         var text_height:CGFloat = 44.0;
         
         enter_text.backgroundColor = UIColor.whiteColor();
-        enter_text.placeholder = "Create New Palette";
+        enter_text.placeholder = DEFAULT_PLACEHOLDER;
         add_subview(enter_text, background, 0.0, frame_height - text_height + 1.0, 10.0, text_height);
         enter_text.setNeedsLayout();
         enter_text.layoutIfNeeded();
