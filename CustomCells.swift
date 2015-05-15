@@ -11,7 +11,7 @@ import UIKit
 import CoreData
 
 //------------------------------------------------------------------------------------------------
-// BEGIN MY TABLE VIEW CELL
+// BEGIN PALETTE TABLE VIEW CELL
 //------------------------------------------------------------------------------------------------
 
 class paletteTableViewCell:UITableViewCell

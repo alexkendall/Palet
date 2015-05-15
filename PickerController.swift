@@ -141,6 +141,7 @@ class ColorController: UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         super_view = self.view;
+        color_height = (super_view.bounds.height - toolbar_height) / 5.0;
         add_subview(background, super_view, 1.0, 1.0, 1.0);
         background.backgroundColor = UIColor.whiteColor();
         var super_height:CGFloat = super_view.bounds.width;
