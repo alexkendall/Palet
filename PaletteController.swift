@@ -82,7 +82,7 @@ class PaletteControler:UIViewController, UITableViewDelegate
 class GridController:UIViewController
 {
     var super_view = UIView();
-    var title_label = UILabel();
+    var title_label:Label = Label();
     var exit = UIButton();
     var scroll = UIScrollView();
     var title_margin:CGFloat = 44.0;
@@ -103,11 +103,28 @@ class GridController:UIViewController
         
         // configure title label
         title_label.textColor = UIColor.blackColor();
-        title_label.font = UIFont.systemFontOfSize(20.0);
         title_label.textAlignment = NSTextAlignment.Center;
         title_label.backgroundColor = UIColor.whiteColor();
         title_label.layer.borderWidth = 1.0;
+        title_label.drawTextInRect(CGRect());
+        title_label.textAlignment = NSTextAlignment.Left;
         add_subview(title_label, super_view, margin, super_view.bounds.height - title_margin - margin, margin, margin);
+        
+        
+        
+        // configure font size depending on device type
+        if((DEVICE_VERSION == DEVICE_TYPE.IPHONE_4) || (DEVICE_VERSION == DEVICE_TYPE.IPHONE_5))
+        {
+            title_label.font = UIFont.systemFontOfSize(16.0);
+        }
+        else
+        {
+            title_label.font = UIFont.systemFontOfSize(20.0);
+            if(DEVICE_VERSION == DEVICE_TYPE.IPAD)
+            {
+                title_label.textAlignment = NSTextAlignment.Center; // we can display text in center without having to worry about length
+            }
+        }
         
         // configure scroll view
         add_subview(scroll, super_view, margin + title_margin - 1, margin + toolbar_height, margin, margin);
@@ -486,3 +503,19 @@ class AddController:UIViewController, UITextFieldDelegate
     }
     
 }
+
+class Label:UILabel
+{
+    override func drawTextInRect(rect: CGRect)
+    {
+        super.drawTextInRect(CGRect(x: margin, y: 0, width: self.bounds.width - 44.0 - (margin * 2.0), height: self.bounds.height));
+        
+    }
+}
+
+
+
+
+
+
+
